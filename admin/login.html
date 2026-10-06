@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBites - Admin Login</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      .auth-image-panel {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1500 100%);
+      }
+      .auth-image-panel img {
+        mix-blend-mode: multiply;
+        opacity: 0.7;
+      }
+      .admin-badge {
+        display: inline-block;
+        background: rgba(220, 53, 69, 0.15);
+        color: #ff6b6b;
+        border: 1px solid rgba(220, 53, 69, 0.4);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-image-panel">
+        <div class="logo">
+          <span>Uni</span><span style="color: #fff">Bites</span>
+        </div>
+        <a href="../index.html" class="auth-back"
+          ><i class="fas fa-arrow-left"></i
+        ></a>
+        <img
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+          alt="Admin"
+        />
+        <div class="auth-overlay-text">
+          <p>Manage the whole</p>
+          <h2>Platform</h2>
+        </div>
+      </div>
+
+      <div class="auth-form-panel">
+        <div class="auth-form-inner">
+          <span class="admin-badge"
+            ><i class="fas fa-shield-alt"></i> Admin Portal</span
+          >
+          <h1>Admin Login</h1>
+          <p>Restricted access — authorized personnel only</p>
+
+          <div class="form-group">
+            <label class="form-label">Admin Email</label>
+            <div class="form-control-icon">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="admin@uiu.ac.bd"
+                id="email"
+              />
+              <span class="icon"><i class="fas fa-envelope"></i></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="form-control-icon">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Enter your password"
+                id="password"
+              />
+              <span class="icon"><i class="fas fa-lock"></i></span>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary btn-block mt-16"
+            onclick="handleAdminLogin()"
+            style="padding: 14px; font-size: 1rem"
+          >
+            Login to Admin Panel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script>
+      // DEMO ONLY — real auth happens server-side in Phase 3.
+      // Fixed: admin@uiu.ac.bd / 12345
+      async function handleAdminLogin() {
+        const email = document
+          .getElementById("email")
+          .value.trim()
+          .toLowerCase();
+        const pass = document.getElementById("password").value;
+
+        try {
+          const res = await fetch("../login.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password: pass }),
+          });
+          const data = await res.json();
+
+          if (!data.success) {
+            showToast(data.message || "Invalid admin credentials", "error");
+            return;
+          }
+          if (data.user.role !== "admin") {
+            showToast("This login is for admins only.", "error");
+            return;
+          }
+
+          sessionStorage.setItem(
+            "unibites_admin",
+            JSON.stringify({ email: data.user.email, name: data.user.name }),
+          );
+          showToast("Welcome, Admin!");
+          setTimeout(() => (window.location.href = "dashboard.html"), 800);
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+        }
+      }
+      function showToast(msg, type = "success") {
+        const tc = document.getElementById("toast-container");
+        const t = document.createElement("div");
+        t.className = `toast ${type}`;
+        const icon = type === "success" ? "check-circle" : "exclamation-circle";
+        const color = type === "success" ? "#28a745" : "#dc3545";
+        t.innerHTML = `<i class="fas fa-${icon}" style="color:${color};margin-right:8px;"></i>${msg}`;
+        tc.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+      }
+    </script>
+  </body>
+</html>

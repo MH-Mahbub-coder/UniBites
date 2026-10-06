@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBites - Foods Menu</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      .foods-hero {
+        position: relative;
+        min-height: 340px;
+        display: flex;
+        align-items: flex-end;
+        padding: 40px 60px;
+        overflow: hidden;
+      }
+      .foods-hero img.bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+      .foods-hero .overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.5) 0%,
+          rgba(0, 0, 0, 0.85) 100%
+        );
+        z-index: 1;
+      }
+      .foods-hero .content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+      }
+      .foods-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 20px;
+      }
+      .foods-hero h1 span {
+        color: var(--primary);
+      }
+
+      .foods-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 24px;
+        padding: 30px 40px;
+      }
+      @media (max-width: 900px) {
+        .foods-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .foods-main-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 1200px) {
+        .foods-main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .food-item-card {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      .food-item-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(255, 165, 0, 0.1);
+      }
+      .food-item-card .img-wrap {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+      }
+      .food-item-card .img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .food-item-card .food-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--primary);
+        color: #000;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 10px;
+      }
+      .food-item-body {
+        padding: 14px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .food-item-name {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .food-item-stall {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      /* Rating row — sits between shop name and price */
+      .food-item-rating {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .food-item-rating .stars {
+        color: var(--primary);
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+      }
+      .food-item-rating .rating-num {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: var(--text-white);
+      }
+      .food-item-rating .rating-count {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+      .food-item-rating.no-ratings {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      .food-item-price {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 12px;
+      }
+      .food-item-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div
+        class="logo"
+        onclick="window.location.href = '../index.html'"
+        style="cursor: pointer"
+      >
+        <span>Uni</span><span>Bites</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="canteen.html">Canteen Stalls</a>
+        <a href="foods.html" class="active">Foods</a>
+        <a href="earn.html">Earn as Partner</a>
+        <a href="support.html">Support</a>
+      </div>
+      <div class="nav-right">
+        <div class="nav-cart" onclick="window.location.href = 'checkout.html'">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cart-count">0</span>
+        </div>
+        <img
+          src="https://i.pravatar.cc/80?img=12"
+          alt="User"
+          class="nav-avatar"
+          onclick="window.location.href = 'profile.html'"
+        />
+      </div>
+    </nav>
+
+    <section class="foods-hero">
+      <img
+        class="bg"
+        src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80"
+        alt="Food"
+      />
+      <div class="overlay"></div>
+      <div class="content">
+        <h1>
+          Taste the <span>Difference,</span><br />Taste the
+          <span>Good Life</span>
+        </h1>
+        <div class="search-bar" style="max-width: 460px">
+          <span class="search-icon"><i class="fas fa-utensils"></i></span>
+          <input
+            type="text"
+            placeholder="Search Foods"
+            id="search-input"
+            oninput="filterFoods()"
+          />
+          <i class="fas fa-search" style="color: rgba(255, 255, 255, 0.5)"></i>
+        </div>
+      </div>
+    </section>
+
+    <div style="background: var(--bg-dark); padding: 16px 40px 8px">
+      <p style="font-size: 1.1rem; font-weight: 600; text-align: center">
+        Enjoy <span style="color: var(--primary)">Delicious Food</span> In Our
+        Menu
+      </p>
+    </div>
+
+    <div class="foods-layout">
+      <aside>
+        <div class="filter-sidebar">
+          <div class="filter-title">Filter by Price</div>
+          <input
+            type="range"
+            class="price-slider"
+            min="10"
+            max="700"
+            value="700"
+            oninput="updatePrice(this.value)"
+            id="price-range"
+            title="Filter by maximum price"
+            aria-label="Filter by maximum price"
+          />
+          <div class="price-display">
+            Price : 10 BDT - <span id="price-val">700</span> BDT
+            <button
+              class="btn btn-primary btn-sm"
+              style="margin-left: 8px"
+              onclick="filterFoods()"
+            >
+              Filter
+            </button>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="filter-section">
+            <div class="filter-title">Canteens</div>
+            <div id="canteen-filter-list"></div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="filter-section">
+            <div class="filter-title">Food Category</div>
+            <div id="category-filter-list"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <div class="foods-main-grid" id="foods-grid"></div>
+        <div class="load-more-wrap">
+          <button class="btn btn-primary" onclick="loadMore()">
+            See More..
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+          <p>Madani Avenue, Badda,<br />Notun Bazar, Dhaka 1212</p>
+          <p style="margin-top: 8px">
+            405-415-9245<br />405-658-2022<br />unibites@support.gmail
+          </p>
+        </div>
+        <div>
+          <h4>About Us :</h4>
+          <p>
+            A student first delivery network designed to connect hungry campus
+            diners with local canteen stalls, powered by UIU student riders.
+          </p>
+        </div>
+        <div>
+          <h4>Shops :</h4>
+          <ul>
+            <li>
+              <a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a>
+            </li>
+            <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+            <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+            <li><a href="canteen.html?stall=cp">CP</a></li>
+            <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+            <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal :</h4>
+          <ul>
+            <li><a href="support.html">Support</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+    </footer>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="../js/cart.js"></script>
+    <script>
+      let allFoods = [];
+      let allCategories = [];
+      let visibleCount = 6;
+      let selectedCategories = new Set();
+      let allShops = [];
+      let selectedShops = new Set();
+
+      // A generic fallback photo — real per-item photos arrive once shop
+      // image upload is wired in Phase 3D. Until then, DB rows carry a
+      // placeholder filename with no real file behind it.
+      const FALLBACK_IMG =
+        "https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=400&q=80";
+
+      function foodImageSrc(f) {
+        // Real uploaded images will live at ../uploads/foods/<filename>.
+        // Anything still on the seed placeholder falls back to a stock photo.
+        if (!f.image || f.image === "food_default.jpg") return FALLBACK_IMG;
+        return "../uploads/foods/" + f.image;
+      }
+
+      function ratingMarkup(f) {
+        if (f.rating_count === 0) {
+          return `<div class="rating-row no-ratings"><i class="far fa-star" style="margin-right:4px;"></i>No ratings yet</div>`;
+        }
+        return `<div class="rating-row"><span class="stars">${renderStarsHTML(f.avg_rating)}</span><span class="rating-num">${f.avg_rating}</span><span class="rating-count">(${f.rating_count})</span></div>`;
+      }
+
+      function renderCategoryFilters() {
+        const container = document.getElementById("category-filter-list");
+        container.innerHTML = allCategories
+          .map((cat) => {
+            const id = "cat-" + cat.slug;
+            return `
+        <div class="filter-item">
+          <input type="checkbox" id="${id}" onchange="toggleCategory('${cat.slug}', this)">
+          <label for="${id}">${cat.name} <span class="count">${cat.food_count}</span></label>
+        </div>`;
+          })
+          .join("");
+      }
+
+      function toggleCategory(slug, checkbox) {
+        if (checkbox.checked) selectedCategories.add(slug);
+        else selectedCategories.delete(slug);
+        renderFoods(applyFilters());
+      }
+      
+      function renderShopFilters() {
+        const container = document.getElementById('canteen-filter-list');
+        container.innerHTML = allShops.map(s => `
+          <div class="filter-item">
+            <input type="checkbox" id="shop-${s.slug}" onchange="toggleShop('${s.slug}', this)">
+            <label for="shop-${s.slug}">${s.name}</label>
+          </div>`).join('');
+      }
+
+      function toggleShop(slug, checkbox) {
+        if (checkbox.checked) selectedShops.add(slug);
+        else selectedShops.delete(slug);
+        renderFoods(applyFilters());
+      }
+
+      function renderFoods(foods) {
+        const grid = document.getElementById("foods-grid");
+        if (foods.length === 0) {
+          grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+          <i class="fas fa-utensils" style="font-size:2.5rem;color:var(--text-muted);margin-bottom:16px;display:block;"></i>
+          <h3 style="margin-bottom:6px;">No foods match your filters</h3>
+          <p style="color:var(--text-muted);font-size:0.85rem;">Try widening your price range or clearing a category filter.</p>
+        </div>`;
+          return;
+        }
+        grid.innerHTML = "";
+        foods.slice(0, visibleCount).forEach((f) => {
+          grid.innerHTML += `
+        <div class="food-item-card">
+          <div class="img-wrap">
+            <img src="${foodImageSrc(f)}" alt="${f.name}">
+            ${f.tag ? `<span class="food-tag">${f.tag}</span>` : ""}
+          </div>
+          <div class="food-item-body">
+            <div class="food-item-name">${f.name}</div>
+            <div class="food-item-stall">${f.stall}</div>
+            ${ratingMarkup(f)}
+            <div class="food-item-price">BDT ${f.price}</div>
+            <div class="food-item-actions">
+              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="handleBuyNow('${jsAttr(f.name)}',${f.price},'${jsAttr(f.stall)}')">Buy Now</button>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="handleAddToCart('${jsAttr(f.name)}',${f.price},'${jsAttr(f.stall)}')">Add to Cart</button>
+            </div>
+          </div>
+        </div>`;
+        });
+      }
+
+      function applyFilters() {
+        const q = document.getElementById('search-input').value.toLowerCase();
+        const maxPrice = parseInt(document.getElementById('price-range').value);
+        return allFoods.filter(f =>
+          f.name.toLowerCase().includes(q) &&
+          f.price <= maxPrice &&
+          (selectedCategories.size === 0 || selectedCategories.has(f.category_slug)) &&
+          (selectedShops.size === 0 || selectedShops.has(f.stall_slug))
+        );
+      }
+
+      function filterFoods() {
+        visibleCount = 6;
+        renderFoods(applyFilters());
+      }
+
+      function loadMore() {
+        visibleCount += 6;
+        renderFoods(applyFilters());
+      }
+      function updatePrice(val) {
+        document.getElementById("price-val").textContent = val;
+      }
+      function handleBuyNow(name, price, stall) {
+        buyNowItem(name, price, stall, "checkout.html");
+      }
+      function handleAddToCart(name, price, stall) {
+        addItemToCart(name, price, stall);
+        showToast(`${name} added to cart!`);
+      }
+
+      async function loadFoodsAndCategories() {
+        try {
+          const [foodsRes, catsRes, shopsRes] = await Promise.all([
+            fetch('../get_foods.php'),
+            fetch('../get_categories.php'),
+            fetch('../get_shops.php')
+          ]);
+          const foodsData = await foodsRes.json();
+          const catsData = await catsRes.json();
+          const shopsData = await shopsRes.json();
+
+          if (foodsData.success) allFoods = foodsData.foods;
+          if (catsData.success) allCategories = catsData.categories;
+          if (shopsData.success) allShops = shopsData.shops;
+
+          renderCategoryFilters();
+          renderShopFilters();
+          renderFoods(allFoods);
+        } catch (err) {
+          document.getElementById('foods-grid').innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">
+              Couldn't load the menu right now. Please refresh the page.
+            </div>`;
+        }
+      }
+
+      loadFoodsAndCategories();
+    </script>
+  </body>
+</html>

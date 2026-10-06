@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Canteen Stalls</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .stall-hero {
+      position: relative;
+      min-height: 460px;
+      display: flex;
+      align-items: flex-end;
+      padding: 50px 60px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .stall-hero img.bg {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+      transition: opacity 0.3s ease;
+    }
+    .stall-hero .overlay {
+      position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%); z-index: 1;
+    }
+    .stall-hero .content { position: relative; z-index: 2; }
+    .stall-hero h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 6px; }
+    .stall-hero h1 span { color: var(--primary); }
+    .stall-hero p { font-size: 0.88rem; color: rgba(255,255,255,0.75); max-width: 500px; margin-bottom: 20px; }
+    .hero-btns { display: flex; gap: 12px; }
+
+    .stall-special-section {
+      padding: 40px;
+    }
+    .special-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .special-title span { color: var(--primary); }
+
+    .special-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 900px) { .special-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .special-grid { grid-template-columns: 1fr; } }
+
+    .food-img-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      transition: var(--transition);
+    }
+    .food-img-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255,165,0,0.15); }
+    .food-img-card img { width: 100%; height: 200px; object-fit: cover; }
+    .food-img-card .food-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      padding: 50px 14px 14px;
+    }
+    .food-img-card .food-overlay .f-name { font-size: 1rem; font-weight: 700; }
+    .food-img-card .food-overlay .f-stall { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 6px; }
+    .food-img-card .food-overlay .f-price { font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-bottom: 10px; }
+    .food-img-card .food-actions { display: flex; gap: 8px; }
+
+    .rating-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .rating-row .stars { color: var(--primary); font-size: 0.78rem; letter-spacing: 1px; }
+    .rating-row .rating-num { font-size: 0.76rem; font-weight: 700; color: #fff; }
+    .rating-row .rating-count { font-size: 0.72rem; color: var(--text-gray); }
+    .rating-row.no-ratings { font-size: 0.72rem; color: var(--text-gray); font-style: italic; }
+
+    #see-more-wrap { text-align: center; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="canteen.html" class="active">Canteen Stalls</a>
+      <a href="foods.html">Foods</a>
+      <a href="earn.html">Earn as Partner</a>
+      <a href="support.html">Support</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cart" onclick="window.location.href='checkout.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </div>
+      <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+      <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+    </div>
+  </nav>
+
+  <div class="sub-nav" id="stall-tabs">
+    <a href="#" class="active" onclick="selectStall('khansKitchen',this);return false;">Khan's kitchen</a>
+    <a href="#" onclick="selectStall('olympia',this);return false;">Olympia</a>
+    <a href="#" onclick="selectStall('wellFood',this);return false;">Well Food</a>
+    <a href="#" onclick="selectStall('cp',this);return false;">CP</a>
+    <a href="#" onclick="selectStall('brewCafe',this);return false;">Brew Cafe</a>
+    <a href="#" onclick="selectStall('cafeNeptune',this);return false;">Cafe Neptune</a>
+  </div>
+
+  <section class="stall-hero" id="stall-hero">
+    <img class="bg" id="stall-hero-img" src="../images/shops/khan_kitchen_background.png" alt="Stall">
+    <div class="overlay"></div>
+    <div class="content">
+      <span class="stall-hero-badge" id="stall-badge">Khan's Kitchen</span>
+      <h1 id="stall-h1">Authentic <span>Campus Flavors,</span> Delivered<br>Right to Your <span>Desk.</span></h1>
+      <p id="stall-desc">Craving a heavy lunch or a quick comforting meal? Beat the crowds at Khan's Kitchen. Order your favorite dishes and have a peer bring them straight to your current spot.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="window.location.href='foods.html'">
+          <i class="fas fa-utensils"></i> Order Food
+        </button>
+        <button class="btn btn-outline" onclick="window.location.href='earn.html'">
+          <i class="fas fa-motorcycle"></i> Deliver & Earn
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="stall-special-section">
+    <div class="special-title" id="stall-special-title"><span>Khan's Kitchen</span> Special</div>
+    <div class="special-grid" id="special-grid"></div>
+    <div id="see-more-wrap">
+      <button class="btn btn-primary" id="see-more-btn" onclick="showMoreForCurrentStall()">See More..</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div>
+        <h4>About Us :</h4>
+        <p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p>
+      </div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const stalls = {
+      khansKitchen: {
+        name: "Khan's Kitchen", badge: "Khan's Kitchen",
+        img: '../images/shops/khan_kitchen_background.png',
+        h1: `Authentic <span>Campus Flavors,</span> Delivered<br>Right to Your <span>Desk.</span>`,
+        desc: "Craving a heavy lunch or a quick comforting meal? Beat the crowds at Khan's Kitchen. Order your favorite dishes and have a peer bring them straight to your current spot."
+      },
+      olympia: {
+        name: "Olympia", badge: "Olympia",
+        img: '../images/shops/olympia_background.png',
+        h1: `Hearty Lunch <span>Platter & Heavy Meals,</span><br>Delivered <span>Instantly.</span>`,
+        desc: "Hungry for a proper lunch between classes? Skip the busy queues at Olympia. Order your favorite set menus or rice dishes and get them delivered straight to your spot."
+      },
+      wellFood: {
+        name: "Well Food", badge: "Well Food",
+        img: '../images/shops/well_food_background.png',
+        h1: `Fresh <span>Bakery & Sweets,</span> Delivered to<br>Your <span>Desk.</span>`,
+        desc: "Craving a quick pastry or a sweet treat between lectures? Order from UIU Well Food and get it delivered directly to your classroom or lab by a peer."
+      },
+      cp: {
+        name: "CP", badge: "CP",
+        img: '../images/shops/cp_background.png',
+        h1: `<span>Hungry Between Classes?</span> Your Favorite Stalls,<br>Delivered Right to <span>Your Desk.</span>`,
+        desc: "Need a quick, crispy snack breakdown between your classes? Skip the CP counter rush. Order your favorites and get them delivered straight to your campus spot by a peer."
+      },
+      brewCafe: {
+        name: "Brew Cafe", badge: "Brew Cafe",
+        img: '../images/shops/brew_cafe_background.png',
+        h1: `Freshly <span>Brewed Energy,</span> Delivered Straight<br>to Your <span>Desk.</span>`,
+        desc: "Need a quick caffeine kick or a refreshing frappe to get through your next lecture? Skip the long cafe lines. Order from Brew Cafe and get it delivered by a peer."
+      },
+      cafeNeptune: {
+        name: "Cafe Neptune", badge: "Cafe Neptune",
+        img: '../images/shops/cafe_neptune_background.png',
+        h1: `Your Favorite <span>Neptune</span> is here for delivered<br><span>Anywhere on Campus.</span>`,
+        desc: "Craving a quick crispy bite or a refreshing drink during your short break? Skip the crowded Cafe Neptune counter. Place your order and let a peer bring it right to you."
+      }
+    };
+
+    const INITIAL_COUNT = 6;
+    let currentStallKey = 'khansKitchen';
+    let currentStallSlugMap = {
+      khansKitchen: 'khans-kitchen', olympia: 'olympia', wellFood: 'well-food',
+      cp: 'cp', brewCafe: 'brew-cafe', cafeNeptune: 'cafe-neptune'
+    };
+    let currentStallFoods = [];
+    let visibleCount = INITIAL_COUNT;
+
+    async function selectStall(key, el) {
+      document.querySelectorAll('#stall-tabs a').forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
+
+      currentStallKey = key;
+      visibleCount = INITIAL_COUNT;
+
+      const s = stalls[key];
+      document.getElementById('stall-hero-img').src = s.img;
+      document.getElementById('stall-badge').textContent = s.badge;
+      document.getElementById('stall-h1').innerHTML = s.h1;
+      document.getElementById('stall-desc').textContent = s.desc;
+      document.getElementById('stall-special-title').innerHTML = `<span>${s.name}</span> Special`;
+
+      document.getElementById('special-grid').innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px;">Loading menu...</p>`;
+
+      try {
+        const slug = currentStallSlugMap[key];
+        const res = await fetch(`../get_foods.php?shop=${slug}`);
+        const data = await res.json();
+        currentStallFoods = data.success ? data.foods : [];
+      } catch (err) {
+        currentStallFoods = [];
+      }
+
+      renderSpecialFoods();
+    }
+
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=400&q=80';
+    function foodImageSrc(f) {
+      if (!f.image || f.image === 'food_default.jpg') return FALLBACK_IMG;
+      return '../uploads/foods/' + f.image;
+    }
+
+    function foodRatingMarkup(f) {
+      if (f.rating_count === 0) {
+        return `<div class="rating-row no-ratings"><i class="far fa-star" style="margin-right:4px;"></i>No ratings yet</div>`;
+      }
+      return `<div class="rating-row"><span class="stars">${renderStarsHTML(f.avg_rating)}</span><span class="rating-num">${f.avg_rating}</span><span class="rating-count">(${f.rating_count})</span></div>`;
+    }
+
+    function renderSpecialFoods() {
+      const s = stalls[currentStallKey];
+      const grid = document.getElementById('special-grid');
+
+      if (currentStallFoods.length === 0) {
+        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px;">This stall hasn't added any items yet.</p>`;
+        document.getElementById('see-more-btn').style.display = 'none';
+        return;
+      }
+
+      const visibleFoods = currentStallFoods.slice(0, visibleCount);
+      grid.innerHTML = visibleFoods.map(f => `
+        <div class="food-img-card">
+          <img src="${foodImageSrc(f)}" alt="${f.name}">
+          <div class="food-overlay">
+            <div class="f-name">${f.name}</div>
+            <div class="f-stall">${s.name}</div>
+            ${foodRatingMarkup(f)}
+            <div class="f-price">BDT ${f.price}</div>
+            <div class="food-actions">
+              <button class="btn btn-primary btn-sm" style="flex:1;" onclick="handleBuyNow('${jsAttr(f.name)}',${f.price},'${jsAttr(s.name)}')">Buy Now</button>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="handleAddToCart('${jsAttr(f.name)}',${f.price},'${jsAttr(s.name)}')">Add to Cart</button>
+            </div>
+          </div>
+        </div>`).join('');
+
+      const seeMoreBtn = document.getElementById('see-more-btn');
+      seeMoreBtn.style.display = visibleCount >= currentStallFoods.length ? 'none' : 'inline-flex';
+    }
+
+    function showMoreForCurrentStall() {
+      visibleCount += 4;
+      renderSpecialFoods();
+    }
+
+    function handleBuyNow(name, price, stall) { buyNowItem(name, price, stall, 'checkout.html'); }
+    function handleAddToCart(name, price, stall) { addItemToCart(name, price, stall); showToast(`${name} added to cart!`); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const stall = params.get('stall') || 'khansKitchen';
+      const tabEl = document.querySelector(`#stall-tabs a[onclick*="${stall}"]`);
+      if (tabEl) selectStall(stall, tabEl);
+      else selectStall('khansKitchen', document.querySelector('#stall-tabs a'));
+    });
+  </script>
+</body>
+</html>

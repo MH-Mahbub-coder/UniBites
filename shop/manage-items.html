@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Manage Items</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .item-name-cell { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .item-name-cell img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .item-name-cell span { white-space: nowrap; }
+
+    .rating-cell { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .rating-cell .stars { color: var(--primary); font-size: 0.8rem; letter-spacing: 1px; flex-shrink: 0; }
+    .rating-cell .rating-num { font-weight: 700; color: var(--text-white); font-size: 0.82rem; }
+    .rating-cell .rating-count { font-size: 0.72rem; color: var(--text-muted); }
+    .rating-cell.none { color: var(--text-muted); font-style: italic; font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+  <div class="dash-body">
+    <aside class="dash-sidebar">
+      <div class="dash-logo"><span>Uni</span><span>Bites</span></div>
+      <div class="dash-entity">
+        <div class="dash-entity-name" id="shop-name">—</div>
+        <div class="dash-entity-role">Shop Panel</div>
+        <div class="dash-entity-email" id="shop-email"></div>
+      </div>
+      <nav class="dash-nav">
+        <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <a href="manage-items.html" class="active"><i class="fas fa-utensils"></i> Manage Items</a>
+        <a href="orders.html"><i class="fas fa-receipt"></i> Orders</a>
+        <a href="revenue.html"><i class="fas fa-coins"></i> Revenue</a>
+      </nav>
+      <div class="dash-logout">
+        <a href="#" onclick="shopLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-title">Manage <span>Menu Items</span></div>
+          <div class="dash-subtitle">Add, edit, or remove food items from your stall.</div>
+        </div>
+        <button class="btn btn-primary" onclick="openItemModal()"><i class="fas fa-plus"></i> Add New Item</button>
+      </div>
+
+      <div class="dash-panel">
+        <table class="dash-table">
+          <thead>
+            <tr><th>Item</th><th>Category</th><th>Price</th><th>Rating</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="items-table-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Item Modal -->
+  <div class="modal-overlay" id="item-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Add New Item</div>
+        <button class="modal-close" onclick="closeItemModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="item-id">
+        <div class="form-group">
+          <label class="form-label">Item Name*</label>
+          <input type="text" class="form-control" id="item-name" placeholder="e.g. BBQ Chicken Burger">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price (BDT)*</label>
+          <input type="number" class="form-control" id="item-price" placeholder="e.g. 50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-control" id="item-category">
+            <option>Burger</option><option>Chicken</option><option>Pizza</option>
+            <option>Coffee</option><option>Dessert</option><option>Snacks</option>
+            <option>Rice & Meal</option><option>Drinks</option><option>Bread</option><option>Tea</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Item Photo</label>
+          <input type="file" class="form-control" id="item-image-file" accept="image/jpeg,image/png,image/webp">
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">JPG, PNG or WebP. Max 2MB. Leave blank when editing to keep the current photo.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <textarea class="form-control" id="item-desc" placeholder="Short description"></textarea>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="item-available" checked style="width:16px;height:16px;accent-color:var(--primary);">
+          <label for="item-available" style="margin:0;font-size:0.85rem;color:var(--text-gray);">Available for order</label>
+        </div>
+        <button class="btn btn-primary btn-block" id="save-item-btn" onclick="saveItem()">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const shop = JSON.parse(sessionStorage.getItem('unibites_shop') || 'null');
+    if (!shop) window.location.href = 'login.html';
+    else {
+      document.getElementById('shop-name').textContent = shop.name;
+      document.getElementById('shop-email').textContent = shop.email;
+    }
+    function shopLogout() {
+      fetch('../logout.php', { method: 'POST' }).finally(() => {
+        sessionStorage.removeItem('unibites_shop');
+        window.location.href = 'login.html';
+      });
+    }
+
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=100&q=80';
+    function imgSrc(filename) {
+      if (!filename || filename === 'food_default.jpg') return FALLBACK_IMG;
+      return '../uploads/foods/' + filename;
+    }
+
+    function ratingCellMarkup(item) {
+      if (item.rating_count === 0) return `<div class="rating-cell none"><i class="far fa-star"></i> No ratings yet</div>`;
+      return `
+        <div class="rating-cell">
+          <span class="stars">${renderStarsHTML(item.avg_rating)}</span>
+          <span class="rating-num">${item.avg_rating}</span>
+          <span class="rating-count">(${item.rating_count})</span>
+        </div>`;
+    }
+
+    async function loadItems() {
+      try {
+        const res = await fetch('../get_shop_items.php');
+        const data = await res.json();
+        if (!data.success) { showToast(data.message, 'error'); return; }
+        renderItems(data.items);
+      } catch (err) {
+        showToast('Could not load your menu. Please refresh.', 'error');
+      }
+    }
+
+    function renderItems(items) {
+      window._currentItems = items;
+      document.getElementById('items-table-body').innerHTML = items.map(it => `
+        <tr>
+          <td>
+            <div class="item-name-cell">
+              <img src="${imgSrc(it.image)}" alt="${it.name}">
+              <span class="strong">${it.name}</span>
+            </div>
+          </td>
+          <td>${it.category}</td>
+          <td class="strong">৳${it.price}</td>
+          <td>${ratingCellMarkup(it)}</td>
+          <td>${it.available ? '<span class="pill pill-active">Available</span>' : '<span class="pill pill-inactive">Unavailable</span>'}</td>
+          <td>
+            <div class="dash-table-actions">
+              <button class="icon-btn" onclick="editItem(${it.id})"><i class="fas fa-edit"></i></button>
+              <button class="icon-btn danger" onclick="deleteItem(${it.id})"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    function openItemModal() {
+      document.getElementById('modal-title').textContent = 'Add New Item';
+      document.getElementById('item-id').value = '';
+      document.getElementById('item-name').value = '';
+      document.getElementById('item-price').value = '';
+      document.getElementById('item-image-file').value = '';
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-available').checked = true;
+      document.getElementById('item-modal').classList.add('show');
+    }
+    function closeItemModal() { document.getElementById('item-modal').classList.remove('show'); }
+
+    function editItem(id) {
+      const it = window._currentItems.find(i => i.id === id);
+      if (!it) return;
+      document.getElementById('modal-title').textContent = 'Edit Item';
+      document.getElementById('item-id').value = it.id;
+      document.getElementById('item-name').value = it.name;
+      document.getElementById('item-price').value = it.price;
+      document.getElementById('item-category').value = it.category;
+      document.getElementById('item-image-file').value = '';
+      document.getElementById('item-available').checked = it.available;
+      document.getElementById('item-modal').classList.add('show');
+    }
+
+    async function saveItem() {
+      const id     = document.getElementById('item-id').value;
+      const name   = document.getElementById('item-name').value.trim();
+      const price  = parseFloat(document.getElementById('item-price').value);
+      const fileEl = document.getElementById('item-image-file');
+
+      if (!name || !price) { showToast('Name and price are required', 'error'); return; }
+
+      const formData = new FormData();
+      if (id) formData.append('item_id', id);
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', document.getElementById('item-category').value);
+      formData.append('description', document.getElementById('item-desc').value.trim());
+      formData.append('available', document.getElementById('item-available').checked ? '1' : '0');
+      if (fileEl.files[0]) formData.append('image', fileEl.files[0]);
+
+      const btn = document.getElementById('save-item-btn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('../save_item.php', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (!data.success) { showToast(data.message || 'Save failed', 'error'); return; }
+
+        showToast('Item saved successfully!');
+        closeItemModal();
+        loadItems();
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Save Item';
+      }
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('Delete this item permanently?')) return;
+      try {
+        const res = await fetch('../delete_item.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: id })
+        });
+        const data = await res.json();
+        if (!data.success) { showToast(data.message, 'error'); return; }
+        showToast('Item deleted.');
+        loadItems();
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
+    });
+
+    loadItems();
+  </script>
+</body>
+</html>

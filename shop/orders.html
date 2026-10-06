@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Shop Orders</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dash-body">
+    <aside class="dash-sidebar">
+      <div class="dash-logo"><span>Uni</span><span>Bites</span></div>
+      <div class="dash-entity">
+        <div class="dash-entity-name" id="shop-name">—</div>
+        <div class="dash-entity-role">Shop Panel</div>
+        <div class="dash-entity-email" id="shop-email"></div>
+      </div>
+      <nav class="dash-nav">
+        <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <a href="manage-items.html"><i class="fas fa-utensils"></i> Manage Items</a>
+        <a href="orders.html" class="active"><i class="fas fa-receipt"></i> Orders</a>
+        <a href="revenue.html"><i class="fas fa-coins"></i> Revenue</a>
+      </nav>
+      <div class="dash-logout">
+        <a href="#" onclick="shopLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-title">Shop <span>Orders</span></div>
+          <div class="dash-subtitle">Accept, prepare, and hand over orders. This page refreshes itself every 20 seconds.</div>
+        </div>
+      </div>
+
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchTab('pending', this)">Active Orders</button>
+        <button class="dash-tab" onclick="switchTab('delivered', this)">Delivered Orders</button>
+      </div>
+
+      <div class="dash-panel">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Items</th><th>Customer</th><th>Type</th>
+              <th>Amount</th><th>Time</th><th>Status</th><th id="action-col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const shop = JSON.parse(sessionStorage.getItem('unibites_shop') || 'null');
+    if (!shop) window.location.href = 'login.html';
+    else {
+      document.getElementById('shop-name').textContent = shop.name;
+      document.getElementById('shop-email').textContent = shop.email;
+    }
+    function shopLogout() {
+      fetch('../logout.php', { method: 'POST' }).finally(() => {
+        sessionStorage.removeItem('unibites_shop');
+        window.location.href = 'login.html';
+      });
+    }
+
+    const STATUS_LABEL = {
+      pending: 'New', confirmed: 'Confirmed', preparing: 'Preparing', ready: 'Ready',
+      rider_accepted: 'Rider assigned', picked_up: 'Picked up', out_for_delivery: 'Out for delivery'
+    };
+    // The one button a shop can press at each stage
+    const NEXT_STEP = {
+      pending:   { label: 'Accept Order',    next: 'confirmed' },
+      confirmed: { label: 'Start Preparing', next: 'preparing' },
+      preparing: { label: 'Mark Ready',      next: 'ready' }
+    };
+
+    let currentTab = 'pending';
+
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      loadOrders();
+    }
+
+    function actionCell(o) {
+      const step = NEXT_STEP[o.status];
+      if (step) {
+        return `<button class="btn btn-primary btn-sm" onclick="advance(${o.id}, '${step.next}', this)">${step.label}</button>`;
+      }
+      if (o.status === 'ready') return '<span class="pill pill-active">Waiting for a rider</span>';
+      if (o.status === 'rider_accepted') return `<span class="pill pill-pending">${escapeHtml(o.rider_name || 'A rider')} is coming</span>`;
+      return `<span class="pill pill-delivered">With ${escapeHtml(o.rider_name || 'rider')}</span>`;
+    }
+
+    async function loadOrders() {
+      const tbody = document.getElementById('orders-table-body');
+      try {
+        const res = await fetch(`../get_shop_orders.php?status=${currentTab}`);
+        const data = await res.json();
+        if (!data.success) { showToast(data.message, 'error'); return; }
+        renderOrders(data.orders);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Couldn't load orders.</td></tr>`;
+      }
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('orders-table-body');
+      const isActive = currentTab === 'pending';
+      document.getElementById('action-col').textContent = isActive ? 'Action' : '';
+
+      if (!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">${isActive ? 'No active orders right now.' : 'No delivered orders yet.'}</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td class="strong">#${escapeHtml(o.order_number)}</td>
+          <td>${o.items.map(i => `${i.quantity}x ${escapeHtml(i.food_name)}`).join(', ')}</td>
+          <td>${escapeHtml(o.full_name)}</td>
+          <td>${o.delivery_type === 'pickup' ? 'Pickup' : 'Delivery'}</td>
+          <td class="strong">৳${o.subtotal}</td>
+          <td>${isActive ? o.time : o.date}</td>
+          <td>${isActive
+                ? `<span class="pill pill-pending">${STATUS_LABEL[o.status] || o.status}</span>`
+                : '<span class="pill pill-delivered">Delivered</span>'}</td>
+          <td>${isActive ? actionCell(o) : '—'}</td>
+        </tr>`).join('');
+    }
+
+    async function advance(orderId, next, btn) {
+      const original = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Updating...';
+      try {
+        const res = await fetch('../update_order_status.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId, status: next })
+        });
+        const data = await res.json();
+        if (!data.success) showToast(data.message, 'error');
+        else showToast(next === 'ready' ? 'Order marked ready. Riders can now pick it up.' : 'Order updated.');
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+      loadOrders();
+    }
+
+    loadOrders();
+    setInterval(() => { if (!document.hidden) loadOrders(); }, 20000);
+  </script>
+</body>
+</html>

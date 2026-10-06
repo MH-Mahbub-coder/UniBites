@@ -1,0 +1,225 @@
+/* ============================================================
+   UniBites — Dashboard Layout (Shop + Admin)
+   Reuses variables from style.css — load style.css BEFORE this file
+   ============================================================ */
+
+.dash-body { display: flex; min-height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.dash-sidebar {
+  width: 260px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  padding: 24px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.dash-logo {
+  padding: 0 24px 24px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.dash-logo span:first-child { color: var(--primary); }
+
+.dash-entity {
+  padding: 0 24px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.dash-entity-name { font-size: 0.95rem; font-weight: 700; }
+.dash-entity-role {
+  font-size: 0.72rem; color: var(--primary); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 700; margin-top: 2px;
+}
+.dash-entity-email { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+.dash-nav { flex: 1; padding: 0 12px; }
+.dash-nav a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; margin-bottom: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-gray); font-size: 0.88rem; font-weight: 500;
+  transition: var(--transition);
+}
+.dash-nav a i { width: 18px; text-align: center; }
+.dash-nav a:hover { background: rgba(255,165,0,0.08); color: var(--primary); }
+.dash-nav a.active { background: rgba(255,165,0,0.12); color: var(--primary); font-weight: 700; }
+
+.dash-logout {
+  padding: 12px 24px; border-top: 1px solid var(--border); margin-top: 12px;
+}
+.dash-logout a {
+  display: flex; align-items: center; gap: 10px;
+  color: #dc3545; font-size: 0.85rem; font-weight: 600; padding: 8px 0;
+}
+
+/* ===== MAIN CONTENT ===== */
+.dash-main { flex: 1; padding: 30px 36px; max-width: 1400px; }
+.dash-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.dash-title { font-size: 1.6rem; font-weight: 800; }
+.dash-title span { color: var(--primary); }
+.dash-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== STAT CARDS ===== */
+.stat-cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 1100px) { .stat-cards-row { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 600px) { .stat-cards-row { grid-template-columns: 1fr; } }
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: var(--transition);
+}
+.stat-card:hover { border-color: rgba(255,165,0,0.3); transform: translateY(-2px); }
+.stat-card-icon {
+  width: 50px; height: 50px; border-radius: 12px;
+  background: rgba(255,165,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary); font-size: 1.3rem; flex-shrink: 0;
+}
+.stat-card-icon.blue { background: rgba(52,152,219,0.15); color: #3498db; }
+.stat-card-icon.green { background: rgba(40,167,69,0.15); color: #28a745; }
+.stat-card-icon.red { background: rgba(220,53,69,0.15); color: #dc3545; }
+.stat-card-value { font-size: 1.4rem; font-weight: 800; }
+.stat-card-label { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
+.stat-card-trend { font-size: 0.72rem; font-weight: 600; margin-top: 4px; }
+.stat-card-trend.up { color: #28a745; }
+.stat-card-trend.down { color: #dc3545; }
+
+/* ===== PANEL / CARD BOX ===== */
+.dash-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.dash-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+}
+.dash-panel-title { font-size: 1rem; font-weight: 700; }
+
+/* ===== TABS ===== */
+.dash-tabs {
+  display: flex; gap: 4px; background: rgba(255,255,255,0.05);
+  border-radius: 10px; padding: 5px; width: fit-content; margin-bottom: 20px;
+}
+.dash-tab {
+  padding: 8px 20px; border-radius: 8px; border: none; background: none;
+  color: var(--text-gray); font-size: 0.84rem; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: var(--transition);
+}
+.dash-tab.active { background: var(--primary); color: #000; }
+
+/* ===== DATA TABLE =====
+   border-collapse merges each cell's border into one continuous line
+   per row, so it never doubles up or looks boxed. */
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dash-table th {
+  text-align: left; font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700;
+  padding: 10px 12px; border-bottom: 2px solid var(--border);
+}
+.dash-table td {
+  padding: 14px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+  color: var(--text-gray);
+  vertical-align: middle;
+}
+.dash-table tbody tr:last-child td { border-bottom: none; }
+.dash-table tr:hover td { background: rgba(255,255,255,0.02); }
+.dash-table td.strong { color: var(--text-white); font-weight: 600; }
+.dash-table .food-thumb {
+  width: 40px; height: 40px; border-radius: 8px; object-fit: cover;
+  display: inline-block; vertical-align: middle; margin-right: 10px;
+}
+
+/* FIX: this class must NEVER be applied directly to a <td>. Setting
+   display:flex on a table cell changes how it participates in the row's
+   layout (its box model stops behaving like a normal cell), which makes
+   its border render at a different height/position than sibling cells —
+   that's exactly what caused the divider line to break and misalign near
+   the Actions column. Always wrap buttons in a <div class="dash-table-actions">
+   INSIDE a plain <td>, never put this class ON the <td> itself. */
+.dash-table-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text-white); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: var(--transition); font-size: 0.82rem;
+}
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+.icon-btn.danger:hover { border-color: #dc3545; color: #dc3545; }
+.icon-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===== SMALL BADGES ===== */
+.pill { font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: inline-block; }
+.pill-pending { background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid rgba(255,193,7,0.4); }
+.pill-delivered { background: rgba(40,167,69,0.15); color: #28a745; border: 1px solid rgba(40,167,69,0.4); }
+.pill-cancelled { background: rgba(220,53,69,0.15); color: #dc3545; border: 1px solid rgba(220,53,69,0.4); }
+.pill-active { background: rgba(40,167,69,0.15); color: #28a745; border: 1px solid rgba(40,167,69,0.4); }
+.pill-inactive { background: rgba(102,102,102,0.2); color: #999; border: 1px solid rgba(150,150,150,0.3); }
+
+/* ===== SIMPLE BAR CHART (CSS-only, no lib needed) ===== */
+.mini-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; padding-top: 10px; }
+.mini-chart .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mini-chart .bar {
+  width: 100%; max-width: 34px; background: var(--primary);
+  border-radius: 6px 6px 0 0; transition: height 0.5s ease;
+}
+.mini-chart .bar-label { font-size: 0.68rem; color: var(--text-muted); }
+.mini-chart .bar-value { font-size: 0.68rem; color: var(--text-white); font-weight: 600; }
+
+/* ===== CREDENTIALS DISPLAY BOX (for new shop creation) ===== */
+.cred-box {
+  background: rgba(255,165,0,0.08);
+  border: 1px solid rgba(255,165,0,0.3);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 16px;
+}
+.cred-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 0.85rem; }
+.cred-row strong { color: var(--primary); }
+.copy-btn {
+  background: none; border: 1px solid var(--border); color: var(--text-white);
+  padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer;
+}
+.copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Mobile responsiveness */
+@media (max-width: 900px) {
+  .dash-body { flex-direction: column; }
+  .dash-sidebar { width: 100%; height: auto; position: relative; }
+  .dash-nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 8px; }
+  .dash-nav a { white-space: nowrap; }
+  .dash-main { padding: 20px; }
+}

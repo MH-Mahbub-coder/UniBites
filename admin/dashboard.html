@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dash-body">
+    <aside class="dash-sidebar">
+      <div class="dash-logo"><span>Uni</span><span>Bites</span></div>
+      <div class="dash-entity">
+        <div class="dash-entity-name">Administrator</div>
+        <div class="dash-entity-role" style="color:#ff6b6b;">Admin Panel</div>
+        <div class="dash-entity-email">admin@uiu.ac.bd</div>
+      </div>
+      <nav class="dash-nav">
+        <a href="dashboard.html" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <a href="manage-shops.html"><i class="fas fa-store"></i> Manage Shops</a>
+        <a href="manage-users.html"><i class="fas fa-users"></i> Manage Users</a>
+      </nav>
+      <div class="dash-logout">
+        <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-title">Platform <span>Overview</span></div>
+          <div class="dash-subtitle">A live snapshot of UniBites across all shops and users.</div>
+        </div>
+      </div>
+
+      <div class="stat-cards-row">
+        <div class="stat-card"><div class="stat-card-icon blue"><i class="fas fa-users"></i></div><div><div class="stat-card-value" id="s-students">—</div><div class="stat-card-label">Total Students</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-store"></i></div><div><div class="stat-card-value" id="s-shops">—</div><div class="stat-card-label">Active Shops</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon green"><i class="fas fa-motorcycle"></i></div><div><div class="stat-card-value" id="s-riders">—</div><div class="stat-card-label">Active Riders</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon red"><i class="fas fa-clock"></i></div><div><div class="stat-card-value" id="s-pending">—</div><div class="stat-card-label">Pending Orders</div></div></div>
+      </div>
+
+      <div class="stat-cards-row">
+        <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-receipt"></i></div><div><div class="stat-card-value" id="s-total-orders">—</div><div class="stat-card-label">Total Orders (All-Time)</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon green"><i class="fas fa-check-double"></i></div><div><div class="stat-card-value" id="s-completed">—</div><div class="stat-card-label">Completed Orders</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon blue"><i class="fas fa-coins"></i></div><div><div class="stat-card-value" id="s-revenue">—</div><div class="stat-card-label">Total Platform Revenue</div></div></div>
+        <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-wallet"></i></div><div><div class="stat-card-value" id="s-payouts">—</div><div class="stat-card-label">Rider Payouts (All-Time)</div></div></div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <div class="dash-panel-title">Revenue by Shop (Last 30 Days)</div>
+          <a href="manage-shops.html" class="btn btn-outline btn-sm">Manage Shops</a>
+        </div>
+        <div class="mini-chart" id="shop-revenue-chart" style="height:180px;"></div>
+      </div>
+
+      <div class="stat-cards-row" style="grid-template-columns: 1fr 1fr; align-items:start;">
+        <div class="dash-panel" style="margin-bottom:0;">
+          <div class="dash-panel-header"><div class="dash-panel-title">Top Performing Shops</div></div>
+          <table class="dash-table">
+            <thead><tr><th>Shop</th><th>Orders</th><th>Revenue</th></tr></thead>
+            <tbody id="top-shops-body"></tbody>
+          </table>
+        </div>
+        <div class="dash-panel" style="margin-bottom:0;">
+          <div class="dash-panel-header"><div class="dash-panel-title">Top Riders</div></div>
+          <table class="dash-table">
+            <thead><tr><th>Rider</th><th>Deliveries</th><th>Earned</th></tr></thead>
+            <tbody id="top-riders-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const admin = JSON.parse(sessionStorage.getItem('unibites_admin') || 'null');
+    if (!admin) window.location.href = 'login.html';
+
+    function adminLogout() {
+      fetch('../logout.php', { method: 'POST' }).finally(() => {
+        sessionStorage.removeItem('unibites_admin');
+        window.location.href = 'login.html';
+      });
+    }
+
+    // Wraps fetch: if the server says the session is gone, go back to login
+    async function api(url, options) {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      if (!data.success && /log in|requires an admin|no longer active/i.test(data.message || '')) {
+        sessionStorage.removeItem('unibites_admin');
+        window.location.href = 'login.html';
+      }
+      return data;
+    }
+
+    const money = n => '৳' + Number(n).toLocaleString();
+
+    function renderChart(rows) {
+      const el = document.getElementById('shop-revenue-chart');
+      if (!rows.length) { el.innerHTML = '<p style="color:var(--text-muted);width:100%;text-align:center;">No active shops yet.</p>'; return; }
+      const max = Math.max(...rows.map(r => r.revenue), 1);
+      el.innerHTML = rows.map(r => `
+        <div class="bar-wrap">
+          <div class="bar-value">${r.revenue >= 1000 ? (r.revenue / 1000).toFixed(1) + 'k' : r.revenue}</div>
+          <div class="bar" style="height:${Math.max(Math.round((r.revenue / max) * 100), r.revenue > 0 ? 3 : 0)}%;"></div>
+          <div class="bar-label">${escapeHtml(r.name)}</div>
+        </div>`).join('');
+    }
+
+    async function loadDashboard() {
+      try {
+        const data = await api('../get_admin_dashboard.php');
+        if (!data.success) { showToast(data.message, 'error'); return; }
+
+        const s = data.stats;
+        document.getElementById('s-students').textContent = s.total_students.toLocaleString();
+        document.getElementById('s-shops').textContent = s.active_shops;
+        document.getElementById('s-riders').textContent = s.active_riders;
+        document.getElementById('s-pending').textContent = s.pending_orders;
+        document.getElementById('s-total-orders').textContent = s.total_orders.toLocaleString();
+        document.getElementById('s-completed').textContent = s.completed_orders.toLocaleString();
+        document.getElementById('s-revenue').textContent = money(s.total_revenue);
+        document.getElementById('s-payouts').textContent = money(s.rider_payouts);
+
+        renderChart(data.revenue_by_shop);
+
+        document.getElementById('top-shops-body').innerHTML = data.top_shops.length
+          ? data.top_shops.map(r => `<tr><td class="strong">${escapeHtml(r.name)}</td><td>${r.orders}</td><td class="strong">${money(r.revenue)}</td></tr>`).join('')
+          : '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">No completed orders yet.</td></tr>';
+
+        document.getElementById('top-riders-body').innerHTML = data.top_riders.length
+          ? data.top_riders.map(r => `<tr><td class="strong">${escapeHtml(r.name)}</td><td>${r.deliveries}</td><td class="strong">${money(r.earned)}</td></tr>`).join('')
+          : '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">No completed deliveries yet.</td></tr>';
+      } catch (err) {
+        showToast('Could not load dashboard data.', 'error');
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

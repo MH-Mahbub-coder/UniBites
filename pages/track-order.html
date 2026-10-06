@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Track Your Order</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .track-page { max-width: 780px; margin: 0 auto; padding: 30px 40px; }
+    .page-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+    .back-square {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-white); font-size: 1rem; cursor: pointer;
+      transition: var(--transition); text-decoration: none; flex-shrink: 0;
+    }
+    .back-square:hover { border-color: var(--primary); color: var(--primary); }
+    .page-heading h1 { font-size: 1.8rem; font-weight: 800; }
+    .page-heading h1 span { color: var(--primary); }
+    .page-subtext { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 26px; }
+
+    .track-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+    .track-order-id { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
+    .track-order-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 24px; }
+
+    .stepper { display: flex; align-items: flex-start; }
+    .step { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+    .step-circle {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; border: 2px solid var(--border); background: var(--bg-card2);
+      color: var(--text-muted); z-index: 2; transition: var(--transition);
+    }
+    .step.done .step-circle { background: var(--primary); border-color: var(--primary); color: #000; }
+    .step.current .step-circle { background: rgba(255,165,0,0.15); border-color: var(--primary); color: var(--primary); animation: pulseStep 1.6s infinite; }
+    @keyframes pulseStep { 0%,100% { box-shadow: 0 0 0 0 rgba(255,165,0,0.4); } 50% { box-shadow: 0 0 0 6px rgba(255,165,0,0); } }
+
+    .step-line { position: absolute; top: 19px; left: -50%; width: 100%; height: 2px; background: var(--border); z-index: 1; }
+    .step:first-child .step-line { display: none; }
+    .step.done .step-line, .step.current .step-line { background: var(--primary); }
+
+    .step-label { font-size: 0.72rem; font-weight: 600; color: var(--text-gray); margin-top: 10px; max-width: 90px; }
+    .step.done .step-label, .step.current .step-label { color: var(--text-white); }
+    .step-time { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; min-height: 12px; }
+
+    @media (max-width: 600px) {
+      .stepper { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .step { flex-direction: row; text-align: left; align-items: center; gap: 14px; width: 100%; }
+      .step-line { display: none !important; }
+      .step-label { max-width: none; margin-top: 0; }
+    }
+
+    .cancelled-banner {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.35);
+      border-radius: var(--radius-sm); padding: 16px 18px; color: #ff6b6b;
+    }
+    .cancelled-banner i { font-size: 1.4rem; }
+    .cancelled-banner strong { display: block; font-size: 0.92rem; }
+    .cancelled-banner span { font-size: 0.78rem; color: var(--text-gray); }
+
+    .track-section-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+    .track-item-row { display: grid; grid-template-columns: 1fr 70px 120px; align-items: center; gap: 10px; font-size: 0.82rem; color: var(--text-gray); padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .track-item-row .price { text-align: right; color: var(--text-white); font-weight: 600; }
+    .track-item-row .shop { text-align: right; color: var(--primary); font-weight: 600; font-size: 0.76rem; }
+
+    .track-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    @media (max-width: 600px) { .track-info-grid { grid-template-columns: 1fr; } }
+    .track-info-box { background: var(--bg-card2); border-radius: var(--radius-sm); padding: 14px 16px; }
+    .track-info-box-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .track-info-box-val { font-size: 0.88rem; font-weight: 600; }
+
+    .rider-block { display: flex; align-items: center; gap: 12px; background: rgba(255,165,0,0.06); border: 1px solid rgba(255,165,0,0.25); border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 20px; }
+    .rider-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+    .rider-name { font-size: 0.88rem; font-weight: 700; }
+    .rider-sub { font-size: 0.74rem; color: var(--text-muted); }
+    .rider-stars { color: var(--primary); font-size: 0.76rem; margin-top: 2px; }
+
+    .track-cancel-wrap { text-align: center; margin-top: 24px; }
+    .cancel-order-btn {
+      background: none; border: 1px solid rgba(220,53,69,0.4); color: #dc3545;
+      padding: 9px 22px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+    }
+    .cancel-order-btn:hover { background: rgba(220,53,69,0.1); }
+
+    .track-search-box { display: flex; gap: 10px; margin-bottom: 24px; }
+    .track-search-box input { flex: 1; }
+    .live-note { text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="canteen.html">Canteen Stalls</a>
+      <a href="foods.html">Foods</a>
+      <a href="earn.html">Earn as Partner</a>
+      <a href="support.html">Support</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cart" onclick="window.location.href='checkout.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </div>
+      <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+      <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+    </div>
+  </nav>
+
+  <div class="track-page">
+    <div class="page-heading">
+      <a href="profile.html" class="back-square"><i class="fas fa-arrow-left"></i></a>
+      <h1>Track Your <span>Order</span></h1>
+    </div>
+    <p class="page-subtext">Follow your order from the kitchen to your doorstep.</p>
+
+    <div class="track-search-box">
+      <input type="text" class="form-control" id="order-id-input" placeholder="Enter Order ID (e.g. 012374641)">
+      <button class="btn btn-primary" onclick="loadOrder()">Track</button>
+    </div>
+
+    <div id="track-content"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div><h4>About Us :</h4><p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p></div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const DELIVERY_STAGES = [
+      { key: 'pending',   label: 'Order Placed', icon: 'fa-receipt' },
+      { key: 'confirmed', label: 'Confirmed',    icon: 'fa-check' },
+      { key: 'preparing', label: 'Preparing',    icon: 'fa-utensils' },
+      { key: 'ready',     label: 'Ready',        icon: 'fa-box' },
+      { key: 'picked_up', label: 'Picked Up',    icon: 'fa-motorcycle' },
+      { key: 'delivered', label: 'Delivered',    icon: 'fa-flag-checkered' },
+    ];
+    const PICKUP_STAGES = [
+      { key: 'pending',   label: 'Order Placed',     icon: 'fa-receipt' },
+      { key: 'confirmed', label: 'Confirmed',        icon: 'fa-check' },
+      { key: 'preparing', label: 'Preparing',        icon: 'fa-utensils' },
+      { key: 'ready',     label: 'Ready for Pickup', icon: 'fa-box' },
+    ];
+    // Real statuses that don't have their own step map onto the nearest one
+    const STAGE_ALIAS = { rider_accepted: 'ready', out_for_delivery: 'picked_up', completed: 'delivered' };
+    const FINAL_STATUSES = ['delivered', 'completed', 'cancelled'];
+
+    let pollTimer = null;
+    let currentStatus = null;
+
+    function notice(icon, title, text, extra = '') {
+      return `
+        <div class="track-card" style="text-align:center;padding:50px;">
+          <i class="fas ${icon}" style="font-size:2rem;color:var(--text-muted);margin-bottom:14px;display:block;"></i>
+          <h3 style="margin-bottom:6px;">${title}</h3>
+          <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:${extra ? '16px' : '0'};">${text}</p>
+          ${extra}
+        </div>`;
+    }
+
+    // silent = a background refresh: keep what's on screen instead of flashing "Loading..."
+    async function loadOrder(silent = false) {
+      const orderNumber = document.getElementById('order-id-input').value.trim();
+      const container = document.getElementById('track-content');
+      if (!orderNumber) { container.innerHTML = ''; return; }
+
+      if (!silent) container.innerHTML = `<div class="track-card" style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>`;
+
+      try {
+        const res = await fetch(`../get_order.php?order_number=${encodeURIComponent(orderNumber)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          currentStatus = null;
+          if (data.code === 'login_required') {
+            container.innerHTML = notice('fa-right-to-bracket', 'Please log in', 'Sign in to track your orders.', '<a href="signin.html" class="btn btn-primary">Log In</a>');
+          } else {
+            container.innerHTML = notice('fa-magnifying-glass', escapeHtml(data.message || 'Order not found'), 'Double-check the Order ID and try again.');
+          }
+          return;
+        }
+        renderOrder(data.order, data.items, data.status_log);
+      } catch (err) {
+        if (!silent) container.innerHTML = notice('fa-plug-circle-xmark', "Couldn't load this order", 'Please try again.');
+      }
+    }
+
+    function renderOrder(order, items, statusLog) {
+      currentStatus = order.status;
+
+      const stages = order.delivery_type === 'pickup' ? PICKUP_STAGES : DELIVERY_STAGES;
+      const cancelled = order.status === 'cancelled';
+      const effective = STAGE_ALIAS[order.status] || order.status;
+      const currentIdx = stages.findIndex(s => s.key === effective);
+      const isFinal = currentIdx === stages.length - 1;
+
+      const stageTimes = {};
+      statusLog.forEach(l => {
+        stageTimes[l.status] = new Date(l.created_at.replace(' ', 'T')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      });
+
+      let progressHTML;
+      if (cancelled) {
+        const when = stageTimes['cancelled'] ? ` at ${stageTimes['cancelled']}` : '';
+        progressHTML = `
+          <div class="cancelled-banner">
+            <i class="fas fa-circle-xmark"></i>
+            <div><strong>This order was cancelled${when}</strong><span>No payment is due for a cancelled order.</span></div>
+          </div>`;
+      } else {
+        progressHTML = `<div class="stepper">${stages.map((s, idx) => {
+          const done = idx < currentIdx || (idx === currentIdx && isFinal);
+          const current = idx === currentIdx && !isFinal;
+          return `
+            <div class="step ${done ? 'done' : (current ? 'current' : '')}">
+              <div class="step-line"></div>
+              <div class="step-circle"><i class="fas ${done ? 'fa-check' : s.icon}"></i></div>
+              <div class="step-label">${s.label}</div>
+              <div class="step-time">${stageTimes[s.key] || ''}</div>
+            </div>`;
+        }).join('')}</div>`;
+      }
+
+      const riderNote = order.status === 'rider_accepted' ? 'Heading to the shop to collect your order'
+                      : FINAL_STATUSES.includes(order.status) ? 'Delivered your order'
+                      : 'On the way to you';
+      const riderHTML = (order.rider && !cancelled) ? `
+        <div class="rider-block">
+          <img src="https://i.pravatar.cc/100?img=11" class="rider-avatar" alt="Rider">
+          <div>
+            <div class="rider-name">${escapeHtml(order.rider.name)}</div>
+            <div class="rider-sub">${riderNote}</div>
+            <div class="rider-stars">${order.rider.rating_count > 0
+              ? renderStarsHTML(order.rider.avg_rating) + ` <span style="color:var(--text-muted);">(${order.rider.rating_count})</span>`
+              : '<span style="color:var(--text-muted);">No ratings yet</span>'}</div>
+          </div>
+        </div>` : '';
+
+      const cancelHTML = order.can_cancel ? `
+        <div class="track-cancel-wrap">
+          <button class="cancel-order-btn" onclick="cancelOrder(${order.id})"><i class="fas fa-times-circle"></i> Cancel Order</button>
+        </div>` : '';
+
+      document.getElementById('track-content').innerHTML = `
+        <div class="track-card">
+          <div class="track-order-id">Order #${escapeHtml(order.order_number)}</div>
+          <div class="track-order-sub">${escapeHtml(order.shop)} · ${order.delivery_type === 'pickup' ? 'Pickup Order' : 'Delivery Order'}</div>
+
+          ${progressHTML}
+          ${riderHTML}
+
+          <div class="track-info-grid">
+            <div class="track-info-box">
+              <div class="track-info-box-title">Delivery / Pickup Location</div>
+              <div class="track-info-box-val">${escapeHtml(order.location)}</div>
+            </div>
+            <div class="track-info-box">
+              <div class="track-info-box-title">Total Bill</div>
+              <div class="track-info-box-val">৳${order.total}</div>
+            </div>
+          </div>
+          ${cancelHTML}
+        </div>
+
+        <div class="track-card">
+          <div class="track-section-title">Order Items</div>
+          ${items.map(it => `
+            <div class="track-item-row">
+              <span>${it.quantity}x ${escapeHtml(it.food_name)}</span>
+              <span class="price">${it.total_price} TK</span>
+              <span class="shop">${escapeHtml(order.shop)}</span>
+            </div>`).join('')}
+        </div>
+        ${FINAL_STATUSES.includes(order.status) ? '' : '<div class="live-note"><i class="fas fa-rotate"></i> This page updates automatically</div>'}`;
+    }
+
+    async function cancelOrder(orderId) {
+      if (!confirm('Cancel this order? This cannot be undone.')) return;
+      try {
+        const res = await fetch('../cancel_order.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId })
+        });
+        const data = await res.json();
+        if (!data.success) { showToast(data.message, 'error'); loadOrder(true); return; }
+        showToast('Order cancelled.', 'error');
+        loadOrder();
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+
+    document.getElementById('order-id-input').addEventListener('keydown', e => { if (e.key === 'Enter') loadOrder(); });
+
+    // Refresh every 15s while the order is still in progress
+    pollTimer = setInterval(() => {
+      if (!document.hidden && currentStatus && !FINAL_STATUSES.includes(currentStatus)) loadOrder(true);
+    }, 15000);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const orderNumber = new URLSearchParams(window.location.search).get('order_number');
+      if (orderNumber) {
+        document.getElementById('order-id-input').value = orderNumber;
+        loadOrder();
+      }
+    });
+  </script>
+</body>
+</html>

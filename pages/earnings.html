@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Rider Earnings</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .earnings-page { max-width: 980px; margin: 0 auto; padding: 30px 40px; }
+
+    .top-rider-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; display: flex; align-items: flex-start; gap: 24px; position: relative; margin-bottom: 20px; }
+    .rider-photo { width: 95px; height: 95px; border-radius: 14px; object-fit: cover; flex-shrink: 0; border: 2px solid var(--primary); }
+    .rider-info-right { flex: 1; }
+    .rider-display-name { font-size: 1.5rem; font-weight: 800; margin-bottom: 2px; }
+    .rider-username-tag { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; }
+    .rider-badges { display: flex; gap: 8px; margin-bottom: 12px; }
+    .badge-pill-o { font-size: 0.72rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,165,0,0.4); background: rgba(255,165,0,0.12); color: var(--primary); }
+    .badge-pill-g { font-size: 0.72rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(40,167,69,0.4); background: rgba(40,167,69,0.12); color: #28a745; }
+    .rider-meta { font-size: 0.82rem; color: var(--text-gray); display: flex; gap: 24px; flex-wrap: wrap; }
+    .rider-meta strong { color: var(--text-white); }
+    .back-btn-earn { position: absolute; top: 20px; right: 20px; background: var(--primary); color: #000; font-size: 0.8rem; font-weight: 700; padding: 7px 18px; border-radius: var(--radius-sm); border: none; cursor: pointer; text-decoration: none; transition: var(--transition); }
+    .back-btn-earn:hover { background: var(--primary-dark); }
+
+    .earnings-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    @media (max-width:900px) { .earnings-summary { grid-template-columns: repeat(2,1fr); } }
+    .earn-sum-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; text-align: center; }
+    .earn-sum-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+    .earn-sum-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    .order-complete-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .order-complete-title { font-size: 0.85rem; font-weight: 600; color: var(--text-gray); margin-bottom: 16px; }
+
+    .comp-card { border: 1px solid var(--border); border-radius: var(--radius); display: grid; grid-template-columns: 180px 1fr 1fr 160px; overflow: hidden; margin-bottom: 14px; transition: var(--transition); }
+    .comp-card:hover { border-color: rgba(255,165,0,0.3); }
+    .cc-img { position: relative; height: 130px; }
+    .cc-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cc-img .cc-time { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.85); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; color: var(--text-gray); line-height: 1.4; }
+    .cc-details, .cc-customer, .cc-earn { padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; }
+    .cc-section-title { color: var(--primary); font-size: 0.78rem; font-weight: 700; margin-bottom: 8px; }
+    .cc-item { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 3px; display: flex; gap: 4px; }
+    .cc-item::before { content: '•'; }
+    .cc-item .sl { color: var(--primary); font-weight: 600; margin-left: auto; }
+    .cc-order-id { margin-top: 8px; font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+    .cc-customer p { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 4px; display: flex; gap: 6px; }
+    .cc-customer p strong { color: var(--text-white); min-width: 55px; }
+    .cc-earn { border-left: 1px solid var(--border); align-items: center; text-align: center; gap: 8px; }
+    .deliverd-label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .earn-badge-pill { background: var(--primary); color: #000; font-size: 0.78rem; font-weight: 700; padding: 6px 14px; border-radius: var(--radius-sm); display: inline-block; }
+    .cc-rating { font-size: 0.72rem; color: var(--text-muted); }
+    .cc-rating .stars { color: var(--primary); }
+
+    .gate-card { text-align: center; padding: 60px 20px; }
+    .gate-card i { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 16px; display: block; }
+
+    @media (max-width: 900px) {
+      .comp-card { grid-template-columns: 130px 1fr; }
+      .cc-earn { border-left: none; border-top: 1px solid var(--border); grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="canteen.html">Canteen Stalls</a>
+      <a href="foods.html">Foods</a>
+      <a href="earn.html" class="active">Earn as Partner</a>
+      <a href="support.html">Support</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cart" onclick="window.location.href='checkout.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </div>
+      <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+      <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+    </div>
+  </nav>
+
+  <div class="earnings-page" id="earnings-page">
+    <div style="text-align:center;padding:60px;color:var(--text-muted);">Loading...</div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div><h4>About Us :</h4><p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p></div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=400&q=80';
+    function imgSrc(f) { return (!f || f === 'food_default.jpg') ? FALLBACK_IMG : '../uploads/foods/' + f; }
+    function topImage(items) {
+      if (!items.length) return FALLBACK_IMG;
+      return imgSrc([...items].sort((a, b) => b.total_price - a.total_price)[0].image);
+    }
+
+    function gate(icon, title, text, extra = '') {
+      return `<div class="gate-card"><i class="fas ${icon}"></i><h3>${title}</h3><p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px;">${text}</p>${extra}</div>`;
+    }
+
+    async function loadEarnings() {
+      const page = document.getElementById('earnings-page');
+      try {
+        const res = await fetch('../get_rider_history.php');
+        const data = await res.json();
+
+        if (!data.success) {
+          if (data.code === 'login_required') {
+            page.innerHTML = gate('fa-right-to-bracket', 'Log in to view earnings', 'Sign in with your student account.', '<a href="signin.html" class="btn btn-primary">Log In</a>');
+          } else {
+            page.innerHTML = gate('fa-motorcycle', "You're not a rider yet", 'Become a rider to start earning on deliveries.', '<a href="orders.html" class="btn btn-primary">Become a Rider</a>');
+          }
+          return;
+        }
+
+        const s = data.summary;
+        const delivered = data.orders.filter(o => o.d_status === 'delivered');
+
+        page.innerHTML = `
+          <div class="top-rider-card">
+            <img src="https://i.pravatar.cc/200?img=12" alt="Profile" class="rider-photo">
+            <div class="rider-info-right">
+              <div class="rider-display-name">Rider Profile</div>
+              <div class="rider-username-tag">Delivery Earnings</div>
+              <div class="rider-badges">
+                <span class="badge-pill-o">${s.avg_rating > 0 ? s.avg_rating + ' ★ (' + s.rating_count + ')' : 'New Rider'}</span>
+                <span class="badge-pill-g">Verified Email</span>
+              </div>
+              <div class="rider-meta">
+                <span>Balance: <strong>৳${s.balance.toLocaleString()}</strong></span>
+                <span>Total Earnings: <strong style="color:var(--primary);">৳${s.earned.toLocaleString()}</strong></span>
+              </div>
+            </div>
+            <a href="../index.html" class="back-btn-earn">Back</a>
+          </div>
+
+          <div class="earnings-summary">
+            <div class="earn-sum-card"><div class="earn-sum-val">৳${s.today}</div><div class="earn-sum-lbl">Today's Earnings</div></div>
+            <div class="earn-sum-card"><div class="earn-sum-val">৳${s.week}</div><div class="earn-sum-lbl">Weekly Earnings</div></div>
+            <div class="earn-sum-card"><div class="earn-sum-val">৳${s.earned}</div><div class="earn-sum-lbl">Total Earnings</div></div>
+            <div class="earn-sum-card"><div class="earn-sum-val" style="color:var(--text-white);">${s.delivered}</div><div class="earn-sum-lbl">Completed Deliveries</div></div>
+          </div>
+
+          <div class="order-complete-box">
+            <div class="order-complete-title">Order Complete List</div>
+            <div id="complete-list"></div>
+          </div>`;
+
+        document.getElementById('complete-list').innerHTML = delivered.length
+          ? delivered.map(o => `
+              <div class="comp-card">
+                <div class="cc-img">
+                  <img src="${topImage(o.items)}" alt="Order">
+                  <div class="cc-time">${o.time}<br>${o.date}</div>
+                </div>
+                <div class="cc-details">
+                  <div class="cc-section-title">Order Details</div>
+                  ${o.items.map(it => `<div class="cc-item"><span>${it.quantity}x ${escapeHtml(it.food_name)}</span><span class="sl">${it.total_price} TK</span></div>`).join('')}
+                  <div class="cc-order-id">Order ID : ${escapeHtml(o.order_number)}</div>
+                </div>
+                <div class="cc-customer">
+                  <div class="cc-section-title">Customer Details</div>
+                  <p><strong>Name</strong> : ${escapeHtml(o.full_name)}</p>
+                  <p><strong>Contact</strong> : ${escapeHtml(o.phone)}</p>
+                  <p><strong>Drop-off</strong> : ${escapeHtml(o.location)}</p>
+                </div>
+                <div class="cc-earn">
+                  <div class="deliverd-label">DELIVERED</div>
+                  <div class="earn-badge-pill">Earn : ${o.rider_earn} TK</div>
+                  <div class="cc-rating">${o.order_rating ? `<span class="stars">${renderStarsHTML(o.order_rating)}</span> ${o.order_rating}.0` : 'Not rated yet'}</div>
+                </div>
+              </div>`).join('')
+          : `<p style="text-align:center;color:var(--text-muted);padding:30px;">No completed deliveries yet.</p>`;
+
+      } catch (err) {
+        page.innerHTML = gate('fa-plug-circle-xmark', "Couldn't load earnings", 'Please refresh and try again.');
+      }
+    }
+
+    loadEarnings();
+  </script>
+</body>
+</html>

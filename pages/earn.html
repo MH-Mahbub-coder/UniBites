@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Earn as Partner</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .earn-hero { position: relative; min-height: 460px; display: flex; align-items: center; overflow: hidden; background: linear-gradient(135deg, #0a0a0a 0%, #1a0d00 60%, #0d0d0d 100%); }
+    .earn-hero-content { position: relative; z-index: 2; padding: 60px 60px; max-width: 560px; }
+    .earn-hero h1 { font-size: 2.8rem; font-weight: 900; line-height: 1.15; margin-bottom: 14px; }
+    .earn-hero h1 span { color: var(--primary); }
+    .earn-hero p { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 28px; max-width: 400px; line-height: 1.7; }
+    .earn-hero-img { position: absolute; right: 0; bottom: 0; height: 100%; max-width: 48%; object-fit: contain; object-position: bottom right; z-index: 1; }
+
+    .riders-section { padding: 60px 40px; background: var(--bg-card); }
+    .riders-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 30px; }
+    @media (max-width: 900px) { .riders-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px) { .riders-grid { grid-template-columns: 1fr; } }
+
+    .rider-card { border-radius: var(--radius); overflow: hidden; position: relative; }
+    .rider-card img { width: 100%; height: 240px; object-fit: cover; display: block; }
+    .rider-card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.92)); padding: 50px 14px 14px; }
+    .rider-name { font-size: 1rem; font-weight: 700; margin-bottom: 1px; }
+    .rider-dept { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+    .rider-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .rider-deliveries { font-size: 0.72rem; color: var(--primary); font-weight: 600; }
+    .rider-rating-box { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .rider-rating-val { font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+    .stars { color: var(--primary); font-size: 0.72rem; }
+
+    .community-section { padding: 0 40px 60px; }
+    .community-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 0; border-radius: var(--radius); overflow: hidden; background: var(--bg-card); border: 1px solid var(--border); }
+    .community-img-panel { position: relative; min-height: 360px; }
+    .community-img-panel img { width: 100%; height: 100%; object-fit: cover; }
+    .community-content-panel { padding: 50px 50px; display: flex; flex-direction: column; justify-content: center; }
+    .community-eyebrow { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); border: 1px solid rgba(255,165,0,0.3); background: rgba(255,165,0,0.1); padding: 4px 12px; border-radius: 4px; display: inline-block; margin-bottom: 14px; }
+    .community-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 14px; line-height: 1.2; }
+    .community-title span { color: var(--primary); }
+    .community-desc { font-size: 0.85rem; color: var(--text-gray); line-height: 1.7; margin-bottom: 28px; }
+    .community-desc span { color: var(--primary); font-weight: 600; }
+
+    .stats-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-box { flex: 1; min-width: 90px; background: var(--bg-card2); border-radius: var(--radius-sm); padding: 16px 20px; text-align: center; }
+    .stat-box:nth-child(2) { background: rgba(40,60,30,0.8); }
+    .stat-box:nth-child(3) { background: rgba(20,40,100,0.5); }
+    .stat-number { font-size: 1.5rem; font-weight: 800; color: var(--text-white); }
+    .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.55); margin-top: 3px; }
+
+    .earnings-banner { background: rgba(255,165,0,0.08); border: 1px solid rgba(255,165,0,0.2); border-radius: var(--radius); padding: 24px 30px; margin: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .earnings-banner h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .earnings-banner p { font-size: 0.82rem; color: var(--text-muted); }
+    .earnings-stats { display: flex; gap: 30px; flex-wrap: wrap; }
+    .earn-stat { text-align: center; }
+    .earn-stat .val { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+    .earn-stat .lbl { font-size: 0.72rem; color: var(--text-muted); }
+
+    @media (max-width: 768px) {
+      .community-grid { grid-template-columns: 1fr; }
+      .community-img-panel { min-height: 200px; }
+      .earn-hero h1 { font-size: 1.8rem; }
+      .earn-hero-img { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="canteen.html">Canteen Stalls</a>
+      <a href="foods.html">Foods</a>
+      <a href="earn.html" class="active">Earn as Partner</a>
+      <a href="support.html">Support</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-cart" onclick="window.location.href='checkout.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </div>
+      <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+      <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+    </div>
+  </nav>
+
+  <section class="earn-hero">
+    <div class="earn-hero-content">
+      <h1>Turn Your<br>Free Slots <span>Into Cash.</span></h1>
+      <p>Join the UniBites rider network. Accept delivery requests on your own schedule, help your peers, and get paid instantly.</p>
+      <button class="btn btn-primary btn-lg" id="hero-cta" onclick="window.location.href='orders.html'">
+        <i class="fas fa-motorcycle"></i> View Delivery Requests
+      </button>
+    </div>
+    <img class="earn-hero-img" src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&q=80" alt="Rider">
+  </section>
+
+  <div id="earnings-banner-wrap"></div>
+
+  <section class="riders-section">
+    <div class="section-title" style="margin-bottom:30px;"><h2>Our Top <span>Riders</span></h2></div>
+    <div class="riders-grid" id="riders-grid"></div>
+  </section>
+
+  <section class="community-section">
+    <div class="community-grid">
+      <div class="community-img-panel">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" alt="Community">
+      </div>
+      <div class="community-content-panel">
+        <span class="community-eyebrow">Our Community</span>
+        <h2 class="community-title">Our <span>Growing Network</span></h2>
+        <p class="community-desc">
+          More than just a food app, <span>UniBites</span> is a community initiative driven by UIUians. We make campus life smoother for hungry students and provide flexible, on-campus earning opportunities for active student riders.
+        </p>
+        <div class="stats-row" id="community-stats">
+          <div class="stat-box"><div class="stat-number">—</div><div class="stat-label">Members</div></div>
+          <div class="stat-box"><div class="stat-number">—</div><div class="stat-label">Active Riders</div></div>
+          <div class="stat-box"><div class="stat-number">—</div><div class="stat-label">Dedicated Riders</div></div>
+        </div>
+        <div class="community-actions">
+          <a href="support.html" class="get-in-touch-btn" style="padding:10px 20px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-white);font-size:0.82rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            GET IN TOUCH <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div><h4>About Us :</h4><p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p></div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    function renderStars(rating) {
+      const full = Math.floor(rating);
+      const half = rating % 1 >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+    }
+
+    async function loadTopRiders() {
+      const grid = document.getElementById('riders-grid');
+      try {
+        const res = await fetch('../get_top_riders.php');
+        const data = await res.json();
+        const riders = data.success ? data.riders : [];
+
+        if (!riders.length) {
+          grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">No riders yet — be the first to start delivering!</p>`;
+          return;
+        }
+
+        grid.innerHTML = riders.map((r, i) => `
+          <div class="rider-card">
+            <img src="https://i.pravatar.cc/300?img=${11 + i}" alt="${escapeHtml(r.name)}">
+            <div class="rider-card-overlay">
+              <div class="rider-name">${escapeHtml(r.name)}</div>
+              <div class="rider-dept">Dept. of ${escapeHtml(r.department)}</div>
+              <div class="rider-bottom">
+                <span class="rider-deliveries">${r.deliveries}+ Deliveries</span>
+                <div class="rider-rating-box">
+                  <span class="rider-rating-val">Rating: ${r.rating_count > 0 ? r.avg_rating : 'New'}</span>
+                  <span class="stars">${r.rating_count > 0 ? renderStars(r.avg_rating) : ''}</span>
+                </div>
+              </div>
+            </div>
+          </div>`).join('');
+      } catch (err) {
+        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">Couldn't load top riders right now.</p>`;
+      }
+    }
+
+    async function loadCommunityStats() {
+      try {
+        const res = await fetch('../get_community_stats.php');
+        const data = await res.json();
+        if (!data.success) return;
+        const boxes = document.querySelectorAll('#community-stats .stat-number');
+        boxes[0].textContent = data.members + '+';
+        boxes[1].textContent = data.active_riders + '+';
+        boxes[2].textContent = data.dedicated_riders + '+';
+      } catch (err) { /* stats are non-critical, fail silently */ }
+    }
+
+    // Shows the rider's own earnings if they're already a rider; otherwise
+    // leaves the section empty (the hero + "Become a Rider" flow on
+    // orders.html/profile.html covers that case).
+    async function loadOwnEarnings() {
+      try {
+        const res = await fetch('../get_rider_history.php');
+        const data = await res.json();
+        if (!data.success) return; // not logged in, or not a rider yet — fine
+
+        const s = data.summary;
+        document.getElementById('earnings-banner-wrap').innerHTML = `
+          <div class="earnings-banner">
+            <div>
+              <h3><i class="fas fa-wallet" style="color:var(--primary);margin-right:8px;"></i>Your Rider Earnings</h3>
+              <p>Track your delivery earnings and completed deliveries</p>
+            </div>
+            <div class="earnings-stats">
+              <div class="earn-stat"><div class="val">৳${s.today}</div><div class="lbl">Today</div></div>
+              <div class="earn-stat"><div class="val">৳${s.week}</div><div class="lbl">This Week</div></div>
+              <div class="earn-stat"><div class="val">৳${s.earned}</div><div class="lbl">Total Earned</div></div>
+              <div class="earn-stat"><div class="val">${s.delivered}</div><div class="lbl">Deliveries</div></div>
+            </div>
+            <a href="earnings.html" class="btn btn-primary">View Earnings</a>
+          </div>`;
+        document.getElementById('hero-cta').textContent = '';
+        document.getElementById('hero-cta').innerHTML = '<i class="fas fa-motorcycle"></i> View Delivery Requests';
+      } catch (err) { /* silent */ }
+    }
+
+    loadTopRiders();
+    loadCommunityStats();
+    loadOwnEarnings();
+  </script>
+</body>
+</html>

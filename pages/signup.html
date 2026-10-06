@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Create Account</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { margin: 0; }
+    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-hint { font-size: 0.74rem; color: var(--text-muted); margin-top: 6px; }
+    .field-hint.error { color: #dc3545; }
+    .field-hint.ok { color: #28a745; }
+    .form-control.invalid { border-color: #dc3545; }
+    .form-control.valid { border-color: #28a745; }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <!-- Left Panel -->
+    <div class="auth-image-panel">
+      <div class="logo"><span>Uni</span><span style="color:#fff">Bites</span></div>
+      <a href="signin.html" class="auth-back"><i class="fas fa-arrow-left"></i></a>
+      <img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800&q=80" alt="Delivery rider">
+      <div class="auth-overlay-text">
+        <p>Eat better, order</p>
+        <h2>Smarter</h2>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <h1>Create Account</h1>
+        <p>Only university student accounts are allowed to register</p>
+
+        <div class="name-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input type="text" class="form-control" placeholder="Enter your first name" id="firstname">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input type="text" class="form-control" placeholder="Enter your last name" id="lastname">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">University Email</label>
+          <div class="form-control-icon">
+            <input type="email" class="form-control" placeholder="yourname@dept.uiu.ac.bd" id="email" oninput="validateEmail()">
+            <span class="icon"><i class="fas fa-envelope"></i></span>
+          </div>
+          <div class="field-hint" id="email-hint">Format: name@department.uiu.ac.bd (e.g. farhan@cse.uiu.ac.bd)</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-control-icon">
+            <input type="password" class="form-control" placeholder="Enter your password (min 6 chars)" id="password">
+            <span class="icon"><i class="fas fa-lock"></i></span>
+          </div>
+        </div>
+
+        <button class="btn btn-white btn-block mt-16" onclick="handleSignUp()" style="padding:14px;font-size:1rem;">
+          Sign up
+        </button>
+
+        <div class="auth-bottom-link">
+          Already have an account? <a href="signin.html">Login Here!</a>
+        </div>
+
+        <div class="auth-bottom-link" style="margin-top:8px;">
+          <a href="../shop/login.html" style="font-size:0.8rem;">Shop Login</a> &nbsp;|&nbsp;
+          <a href="../admin/login.html" style="font-size:0.8rem;">Admin Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const UNIVERSITY_EMAIL_REGEX = /^[a-zA-Z][a-zA-Z0-9._]*@[a-zA-Z][a-zA-Z0-9-]*\.uiu\.ac\.bd$/;
+
+    function validateEmail() {
+      const emailInput = document.getElementById('email');
+      const hint = document.getElementById('email-hint');
+      const val = emailInput.value.trim();
+
+      if (val === '') {
+        emailInput.classList.remove('valid', 'invalid');
+        hint.textContent = 'Format: name@department.uiu.ac.bd (e.g. farhan@cse.uiu.ac.bd)';
+        hint.className = 'field-hint';
+        return false;
+      }
+      if (UNIVERSITY_EMAIL_REGEX.test(val)) {
+        emailInput.classList.remove('invalid');
+        emailInput.classList.add('valid');
+        hint.textContent = '✓ Valid university email format';
+        hint.className = 'field-hint ok';
+        return true;
+      } else {
+        emailInput.classList.remove('valid');
+        emailInput.classList.add('invalid');
+        hint.textContent = '✗ Must be in the format name@department.uiu.ac.bd';
+        hint.className = 'field-hint error';
+        return false;
+      }
+    }
+
+    async function handleSignUp() {
+      const first = document.getElementById('firstname').value.trim();
+      const last  = document.getElementById('lastname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+
+      if (!first || !last || !email || !pass) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+      if (!validateEmail()) {
+        showToast('Please use a valid university email (name@dept.uiu.ac.bd)', 'error');
+        return;
+      }
+      if (pass.length < 6) {
+        showToast('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('../register.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name: first, last_name: last, email, password: pass })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showToast(data.message || 'Registration failed', 'error');
+          return;
+        }
+
+        showToast('Account created successfully!');
+        setTimeout(() => window.location.href = '../index.html', 1000);
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

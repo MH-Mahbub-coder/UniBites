@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBites - Shop Login</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      .auth-image-panel {
+        background: linear-gradient(135deg, #1a0f00 0%, #2a1500 100%);
+      }
+      .auth-image-panel img {
+        mix-blend-mode: multiply;
+        opacity: 0.85;
+      }
+      .shop-badge {
+        display: inline-block;
+        background: rgba(255, 165, 0, 0.15);
+        color: var(--primary);
+        border: 1px solid rgba(255, 165, 0, 0.4);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-image-panel">
+        <div class="logo">
+          <span>Uni</span><span style="color: #fff">Bites</span>
+        </div>
+        <a href="../index.html" class="auth-back"
+          ><i class="fas fa-arrow-left"></i
+        ></a>
+        <img
+          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80"
+          alt="Shop"
+        />
+        <div class="auth-overlay-text">
+          <p>Manage your stall on</p>
+          <h2>UniBites</h2>
+        </div>
+      </div>
+
+      <div class="auth-form-panel">
+        <div class="auth-form-inner">
+          <span class="shop-badge"
+            ><i class="fas fa-store"></i> Shop Portal</span
+          >
+          <h1>Shop Login</h1>
+          <p>Use the email & password provided by the UniBites Admin</p>
+
+          <div class="form-group">
+            <label class="form-label">Shop Email</label>
+            <div class="form-control-icon">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="your-shop@uiu.ac.bd"
+                id="email"
+              />
+              <span class="icon"><i class="fas fa-envelope"></i></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="form-control-icon">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Enter your password"
+                id="password"
+              />
+              <span class="icon"><i class="fas fa-lock"></i></span>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary btn-block mt-16"
+            onclick="handleShopLogin()"
+            style="padding: 14px; font-size: 1rem"
+          >
+            Login to Shop Panel
+          </button>
+
+          <div class="auth-bottom-link">
+            Lost your credentials? Contact <strong>admin@uiu.ac.bd</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="../js/cart.js"></script>
+    <script>
+
+      async function handleShopLogin() {
+        const email = document
+          .getElementById("email")
+          .value.trim()
+          .toLowerCase();
+        const pass = document.getElementById("password").value;
+
+        if (!email || !pass) {
+          showToast("Please fill in all fields", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch("../login.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password: pass }),
+          });
+          const data = await res.json();
+
+          if (!data.success) {
+            showToast(
+              data.message || "Invalid shop email or password",
+              "error",
+            );
+            return;
+          }
+          if (data.user.role !== "shop") {
+            showToast("This login is for shops only.", "error");
+            return;
+          }
+
+          sessionStorage.setItem(
+            "unibites_shop",
+            JSON.stringify({
+              email: data.user.email,
+              name: data.user.shop_name,
+              slug: data.user.shop_slug,
+              shop_id: data.user.shop_id,
+            }),
+          );
+          showToast("Welcome, " + data.user.shop_name + "!");
+          setTimeout(() => (window.location.href = "dashboard.html"), 800);
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+        }
+      }
+    </script>
+  </body>
+</html>

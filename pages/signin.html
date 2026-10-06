@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Sign In</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { margin: 0; }
+    .auth-image-panel {
+      background: linear-gradient(135deg, #1a0f00 0%, #2a1500 100%);
+    }
+    .auth-image-panel img {
+      mix-blend-mode: multiply;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <!-- Left Panel -->
+    <div class="auth-image-panel">
+      <div class="logo">
+        <span>Uni</span><span style="color:#fff">Bites</span>
+      </div>
+      <a href="../index.html" class="auth-back">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" alt="Food delivery">
+      <div class="auth-overlay-text">
+        <p>Continue your food</p>
+        <h2>Adventure</h2>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <h1>Login to Your Account</h1>
+        <p>Enter your details to login</p>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="form-control-icon">
+            <input type="email" class="form-control" placeholder="Enter your email" id="email">
+            <span class="icon"><i class="fas fa-envelope"></i></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="form-control-icon">
+            <input type="password" class="form-control" placeholder="Enter your password" id="password">
+            <span class="icon"><i class="fas fa-lock"></i></span>
+          </div>
+        </div>
+
+        <div class="check-row">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="btn btn-white btn-block mt-16" onclick="handleSignIn()" style="padding:14px;font-size:1rem;">
+          Sign in
+        </button>
+
+        <div class="auth-bottom-link">
+          Don't have an account? <a href="signup.html">Sign up Here!</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    async function handleSignIn() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('../login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showToast(data.message || 'Invalid email or password', 'error');
+          return;
+        }
+
+        if (data.user.role !== 'student') {
+          showToast('This login is for students only.', 'error');
+          return;
+        }
+
+        showToast('Welcome back!');
+        setTimeout(() => window.location.href = '../index.html', 800);
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - My Delivery History</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .orders-navbar {
+      position: sticky; top: 0; z-index: 1000;
+      background: var(--nav-bg); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; display: flex; align-items: center;
+      justify-content: space-between; height: 65px;
+    }
+    .orders-navbar .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .orders-navbar .logo span:first-child { color: var(--primary); }
+    .orders-navbar .logo span:last-child { color: var(--text-white); }
+
+    .orders-nav-tabs { background: rgba(255,255,255,0.07); border-radius: 30px; padding: 6px 8px; display: flex; gap: 4px; }
+    .orders-nav-tabs a { color: var(--text-gray); padding: 7px 20px; border-radius: 24px; font-size: 0.88rem; font-weight: 500; transition: var(--transition); text-decoration: none; }
+    .orders-nav-tabs a.active { color: var(--primary); background: rgba(255,165,0,0.1); }
+    .orders-nav-tabs a:hover { color: var(--text-white); background: rgba(255,255,255,0.1); }
+
+    .page-main { padding: 30px 40px; max-width: 1140px; margin: 0 auto; }
+    .page-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+    .back-square {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-white); font-size: 1rem; cursor: pointer;
+      transition: var(--transition); text-decoration: none; flex-shrink: 0;
+    }
+    .back-square:hover { border-color: var(--primary); color: var(--primary); }
+    .page-heading h1 { font-size: 1.8rem; font-weight: 800; }
+    .page-heading h1 span { color: var(--primary); }
+    .page-subtext { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .hist-summary { display: flex; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
+    .hist-summary-item { flex: 1; min-width: 140px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+    .hist-summary-val { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+    .hist-summary-lbl { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+
+    .hist-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 5px; width: fit-content; margin-bottom: 22px; }
+    .hist-tab { padding: 8px 20px; border-radius: 8px; border: none; background: none; color: var(--text-gray); font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: var(--transition); }
+    .hist-tab.active { background: var(--primary); color: #000; }
+
+    .hist-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      display: grid; grid-template-columns: 160px 1fr 230px 210px;
+      overflow: hidden; margin-bottom: 16px; transition: var(--transition);
+    }
+    .hist-card:hover { border-color: rgba(255,165,0,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+    .hc-summary { position: relative; min-height: 100%; border-right: 1px solid var(--border); overflow: hidden; background: var(--bg-card2); }
+    .hc-summary img { width: 100%; height: 100%; min-height: 150px; object-fit: cover; display: block; }
+    .hc-summary .item-count-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,0.8); color: var(--primary);
+      border: 1px solid rgba(255,165,0,0.5);
+      font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .hc-summary .time-tag {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(0,0,0,0.8); font-size: 0.65rem;
+      padding: 3px 7px; border-radius: 4px; color: var(--text-gray); line-height: 1.4;
+    }
+
+    .hc-details { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
+    .hc-section-title { color: var(--primary); font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
+    .hc-item-row { display: grid; grid-template-columns: 1fr 64px 108px; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-gray); padding: 3px 0; }
+    .hc-item-row .price { text-align: right; color: var(--text-white); font-weight: 600; }
+    .hc-item-row .shop { text-align: right; color: var(--primary); font-weight: 600; font-size: 0.74rem; }
+    .hc-order-id { margin-top: 10px; font-size: 0.78rem; color: var(--primary); font-weight: 600; }
+
+    .hc-customer { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); }
+    .hc-customer-row { display: grid; grid-template-columns: 62px 1fr; font-size: 0.78rem; color: var(--text-gray); margin-bottom: 5px; gap: 6px; }
+    .hc-customer-row strong { color: var(--text-white); font-weight: 600; }
+
+    .hc-status { padding: 16px 18px; border-left: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+    .status-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 700; padding: 6px 16px; border-radius: 20px; white-space: nowrap; }
+    .status-chip.to-shop { background: rgba(255,193,7,0.12); color: #FFC107; border: 1px solid rgba(255,193,7,0.35); }
+    .status-chip.in-progress { background: rgba(52,152,219,0.12); color: #3498db; border: 1px solid rgba(52,152,219,0.35); }
+    .status-chip.delivered { background: rgba(40,167,69,0.12); color: #28a745; border: 1px solid rgba(40,167,69,0.35); }
+
+    .earn-stat-block { display: flex; align-items: center; gap: 10px; background: var(--bg-card2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; width: 100%; }
+    .earn-stat-icon { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .earn-stat-icon.pending { background: rgba(52,152,219,0.12); border: 1px solid rgba(52,152,219,0.3); color: #3498db; }
+    .earn-stat-icon.confirmed { background: rgba(255,165,0,0.12); border: 1px solid rgba(255,165,0,0.3); color: var(--primary); }
+    .earn-stat-text { text-align: left; }
+    .earn-stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .earn-stat-amount { font-size: 0.95rem; font-weight: 800; margin-top: 1px; }
+    .earn-stat-amount.pending { color: #3498db; }
+    .earn-stat-amount.confirmed { color: var(--primary); }
+
+    .order-rating-badge { display: flex; align-items: center; gap: 6px; width: 100%; font-size: 0.72rem; color: var(--text-gray); justify-content: center; }
+    .order-rating-badge .stars { color: var(--primary); font-size: 0.8rem; letter-spacing: 1px; }
+    .order-rating-badge .rating-num { font-weight: 700; color: var(--text-white); }
+    .order-rating-badge.none { color: var(--text-muted); font-style: italic; }
+
+    .hc-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .act-btn { width: 100%; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: var(--transition); }
+    .act-btn.primary { background: var(--primary); color: #000; border: none; }
+    .act-btn.primary:hover { background: var(--primary-dark); }
+    .act-btn.ghost { background: none; color: var(--text-gray); border: 1px solid var(--border); }
+    .act-btn.ghost:hover { border-color: #dc3545; color: #dc3545; }
+    .act-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .gate-card { text-align: center; padding: 60px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .gate-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; display: block; }
+    .gate-card h3 { margin-bottom: 6px; }
+    .gate-card p { color: var(--text-muted); font-size: 0.85rem; max-width: 440px; margin: 0 auto 18px; }
+
+    @media (max-width: 1000px) {
+      .hist-card { grid-template-columns: 100px 1fr; grid-template-rows: auto auto auto; }
+      .hc-summary img { min-height: 100px; }
+      .hc-customer, .hc-status { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="orders-navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="orders-nav-tabs">
+      <a href="orders.html">Pending Orders</a>
+      <a href="history.html" class="active">My History</a>
+      <a href="support.html">Support</a>
+    </div>
+    <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+    <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+  </nav>
+
+  <div class="page-main">
+    <div class="page-heading">
+      <a href="../index.html" class="back-square"><i class="fas fa-arrow-left"></i></a>
+      <h1>My <span>Delivery History</span></h1>
+    </div>
+    <p class="page-subtext">Every order you've picked up or delivered as a rider.</p>
+
+    <div id="summary-wrap" style="display:none;">
+      <div class="hist-summary">
+        <div class="hist-summary-item"><div class="hist-summary-val" id="sum-total">—</div><div class="hist-summary-lbl">Total Orders</div></div>
+        <div class="hist-summary-item"><div class="hist-summary-val" id="sum-delivered">—</div><div class="hist-summary-lbl">Delivered</div></div>
+        <div class="hist-summary-item"><div class="hist-summary-val" id="sum-progress">—</div><div class="hist-summary-lbl">In Progress</div></div>
+        <div class="hist-summary-item"><div class="hist-summary-val" id="sum-earned">—</div><div class="hist-summary-lbl">Total Earned</div></div>
+      </div>
+
+      <div class="hist-tabs">
+        <button class="hist-tab active" onclick="filterHistory('all', this)">All</button>
+        <button class="hist-tab" onclick="filterHistory('in_progress', this)">In Progress</button>
+        <button class="hist-tab" onclick="filterHistory('delivered', this)">Delivered</button>
+      </div>
+    </div>
+
+    <div id="history-list"></div>
+
+    <div class="load-more-wrap">
+      <button class="btn btn-primary" id="load-more-btn" onclick="loadMore()" style="display:none;">Load More...</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div><h4>About Us :</h4><p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p></div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=300&q=80';
+    function imgSrc(filename) {
+      return (!filename || filename === 'food_default.jpg') ? FALLBACK_IMG : '../uploads/foods/' + filename;
+    }
+    function topImage(items) {
+      const top = [...items].sort((a, b) => b.total_price - a.total_price)[0];
+      return imgSrc(top ? top.image : null);
+    }
+
+    let allOrders = [];
+    let visibleCount = 5;
+    let currentFilter = 'all';
+
+    function gateCard(icon, title, text, buttonHtml) {
+      return `<div class="gate-card"><i class="fas ${icon}"></i><h3>${title}</h3><p>${text}</p>${buttonHtml}</div>`;
+    }
+
+    function showGate(data) {
+      document.getElementById('summary-wrap').style.display = 'none';
+      document.getElementById('load-more-btn').style.display = 'none';
+      const list = document.getElementById('history-list');
+      if (data.code === 'login_required') {
+        list.innerHTML = gateCard('fa-right-to-bracket', 'Log in to see your deliveries', 'Sign in with your student account.', '<a href="signin.html" class="btn btn-primary">Log In</a>');
+      } else if (data.code === 'not_rider') {
+        list.innerHTML = gateCard('fa-motorcycle', "You haven't started delivering yet", 'Become a rider to pick up orders and earn on every delivery.', '<a href="orders.html" class="btn btn-primary">See Delivery Requests</a>');
+      } else {
+        list.innerHTML = gateCard('fa-triangle-exclamation', 'This page is for student riders', escapeHtml(data.message || ''), '<a href="../index.html" class="btn btn-outline">Back to Home</a>');
+      }
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('../get_rider_history.php');
+        const data = await res.json();
+        if (!data.success) { showGate(data); return; }
+        allOrders = data.orders;
+        document.getElementById('summary-wrap').style.display = 'block';
+        renderSummary(data.summary);
+        renderHistory();
+      } catch (err) {
+        showToast('Could not load your history.', 'error');
+      }
+    }
+
+    function renderSummary(s) {
+      document.getElementById('sum-total').textContent = s.total;
+      document.getElementById('sum-delivered').textContent = s.delivered;
+      document.getElementById('sum-progress').textContent = s.in_progress;
+      document.getElementById('sum-earned').textContent = '৳' + s.earned.toLocaleString();
+    }
+
+    function orderRatingMarkup(o) {
+      if (o.order_rating) {
+        return `<div class="order-rating-badge"><span class="stars">${renderStarsHTML(o.order_rating)}</span><span class="rating-num">${o.order_rating}.0</span></div>`;
+      }
+      return `<div class="order-rating-badge none"><i class="far fa-star"></i> Not rated yet</div>`;
+    }
+
+    function earnBlock(kind, label, amount) {
+      return `
+        <div class="earn-stat-block">
+          <div class="earn-stat-icon ${kind}"><i class="fas ${kind === 'confirmed' ? 'fa-coins' : 'fa-hourglass-half'}"></i></div>
+          <div class="earn-stat-text">
+            <div class="earn-stat-label">${label}</div>
+            <div class="earn-stat-amount ${kind}">${amount} TK</div>
+          </div>
+        </div>`;
+    }
+
+    function statusMarkup(o) {
+      if (o.d_status === 'delivered') {
+        return `
+          <span class="status-chip delivered"><i class="fas fa-check-circle"></i> Delivered</span>
+          ${earnBlock('confirmed', 'You Earned', o.rider_earn)}
+          ${orderRatingMarkup(o)}`;
+      }
+      const toShop = o.d_status === 'accepted';
+      return `
+        <span class="status-chip ${toShop ? 'to-shop' : 'in-progress'}">
+          <i class="fas ${toShop ? 'fa-store' : 'fa-motorcycle'}"></i> ${toShop ? 'Head to the Shop' : 'Out for Delivery'}
+        </span>
+        ${earnBlock('pending', "You'll Earn", o.rider_earn)}
+        <div class="hc-actions">
+          ${toShop
+            ? `<button class="act-btn primary" onclick="updateDelivery(${o.id}, 'picked_up', this)">Mark Picked Up</button>
+               <button class="act-btn ghost" onclick="updateDelivery(${o.id}, 'release', this)">Give Up</button>`
+            : `<button class="act-btn primary" onclick="updateDelivery(${o.id}, 'delivered', this)">Mark Delivered</button>`}
+        </div>`;
+    }
+
+    function customerRows(o) {
+      const inProgress = o.d_status !== 'delivered';
+      return `
+        <div class="hc-customer-row"><span>Name</span><strong>${escapeHtml(o.full_name)}</strong></div>
+        <div class="hc-customer-row"><span>Contact</span><strong>${escapeHtml(o.phone)}</strong></div>
+        <div class="hc-customer-row"><span>Drop-off</span><strong>${escapeHtml(o.location)}</strong></div>
+        ${inProgress ? `
+          <div class="hc-customer-row"><span>Pickup</span><strong>${escapeHtml(o.shop_name)}${o.shop_location ? ', ' + escapeHtml(o.shop_location) : ''}</strong></div>
+          <div class="hc-customer-row"><span>Payment</span><strong>${o.payment_method === 'cash_on_delivery' ? 'Collect ' + o.total + ' TK cash' : 'Online payment'}</strong></div>` : ''}`;
+    }
+
+    function filterHistory(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.hist-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      visibleCount = 5;
+      renderHistory();
+    }
+
+    function renderHistory() {
+      let orders = allOrders;
+      if (currentFilter === 'delivered') orders = orders.filter(o => o.d_status === 'delivered');
+      if (currentFilter === 'in_progress') orders = orders.filter(o => o.d_status !== 'delivered');
+
+      const list = document.getElementById('history-list');
+      const moreBtn = document.getElementById('load-more-btn');
+
+      if (!orders.length) {
+        const msg = currentFilter === 'delivered' ? "You haven't delivered any orders yet."
+                  : currentFilter === 'in_progress' ? 'Nothing in progress right now.'
+                  : "You haven't picked up any deliveries yet.";
+        list.innerHTML = gateCard('fa-motorcycle', msg, '', '<a href="orders.html" class="btn btn-primary">Browse Pending Orders</a>');
+        moreBtn.style.display = 'none';
+        return;
+      }
+
+      list.innerHTML = orders.slice(0, visibleCount).map(o => `
+        <div class="hist-card">
+          <div class="hc-summary">
+            <img src="${topImage(o.items)}" alt="Order preview">
+            ${o.items.length > 1 ? `<span class="item-count-badge"><i class="fas fa-bag-shopping"></i> ${o.items.length}</span>` : ''}
+            <span class="time-tag">${o.time}<br>${o.date}</span>
+          </div>
+
+          <div class="hc-details">
+            <div class="hc-section-title">Order Details</div>
+            ${o.items.map(it => `
+              <div class="hc-item-row">
+                <span>${it.quantity}x ${escapeHtml(it.food_name)}</span>
+                <span class="price">${it.total_price} TK</span>
+                <span class="shop">${escapeHtml(o.shop_name)}</span>
+              </div>`).join('')}
+            <div class="hc-order-id">Order ID : ${escapeHtml(o.order_number)}</div>
+          </div>
+
+          <div class="hc-customer">
+            <div class="hc-section-title">Customer Details</div>
+            ${customerRows(o)}
+          </div>
+
+          <div class="hc-status">${statusMarkup(o)}</div>
+        </div>`).join('');
+
+      moreBtn.style.display = orders.length > visibleCount ? 'inline-flex' : 'none';
+    }
+
+    async function updateDelivery(orderId, action, btn) {
+      if (action === 'delivered' && !confirm('Confirm you have handed this order to the customer? Your earnings are credited right away.')) return;
+      if (action === 'release' && !confirm('Give up this delivery? It goes back to the pending list for other riders.')) return;
+
+      btn.disabled = true;
+      try {
+        const res = await fetch('../update_delivery_status.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId, action })
+        });
+        const data = await res.json();
+        showToast(data.message, data.success ? 'success' : 'error');
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+      loadHistory();
+    }
+
+    function loadMore() { visibleCount += 3; renderHistory(); }
+
+    loadHistory();
+  </script>
+</body>
+</html>

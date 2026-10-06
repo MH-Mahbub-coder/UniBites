@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniBites - Pending Orders</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .orders-navbar {
+      position: sticky; top: 0; z-index: 1000;
+      background: var(--nav-bg); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; display: flex; align-items: center;
+      justify-content: space-between; height: 65px;
+    }
+    .orders-navbar .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .orders-navbar .logo span:first-child { color: var(--primary); }
+    .orders-navbar .logo span:last-child { color: var(--text-white); }
+
+    .orders-nav-tabs { background: rgba(255,255,255,0.07); border-radius: 30px; padding: 6px 8px; display: flex; gap: 4px; }
+    .orders-nav-tabs a { color: var(--text-gray); padding: 7px 20px; border-radius: 24px; font-size: 0.88rem; font-weight: 500; transition: var(--transition); text-decoration: none; }
+    .orders-nav-tabs a.active { color: var(--primary); background: rgba(255,165,0,0.1); }
+    .orders-nav-tabs a:hover { color: var(--text-white); background: rgba(255,255,255,0.1); }
+
+    .page-main { padding: 30px 40px; max-width: 1140px; margin: 0 auto; }
+    .page-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+    .back-square {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-white); font-size: 1rem; cursor: pointer;
+      transition: var(--transition); text-decoration: none; flex-shrink: 0;
+    }
+    .back-square:hover { border-color: var(--primary); color: var(--primary); }
+    .page-heading h1 { font-size: 1.8rem; font-weight: 800; }
+    .page-heading h1 span { color: var(--primary); }
+
+    .order-req-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-columns: 160px 1fr 220px 200px;
+      overflow: hidden; margin-bottom: 16px; transition: var(--transition);
+    }
+    .order-req-card:hover { border-color: rgba(255,165,0,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+    .orc-summary { position: relative; min-height: 100%; border-right: 1px solid var(--border); overflow: hidden; background: var(--bg-card2); }
+    .orc-summary img { width: 100%; height: 100%; min-height: 150px; object-fit: cover; display: block; }
+    .orc-summary .item-count-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,0.8); color: var(--primary);
+      border: 1px solid rgba(255,165,0,0.5);
+      font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .orc-summary .time-tag {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(0,0,0,0.8); font-size: 0.65rem;
+      padding: 3px 7px; border-radius: 4px; color: var(--text-gray); line-height: 1.4;
+    }
+
+    .orc-details { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
+    .orc-section-title { color: var(--primary); font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
+    .orc-item-row { display: grid; grid-template-columns: 1fr 64px 108px; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-gray); padding: 3px 0; }
+    .orc-item-row .qty-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .orc-item-row .price { text-align: right; color: var(--text-white); font-weight: 600; }
+    .orc-item-row .shop { text-align: right; color: var(--primary); font-weight: 600; font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .orc-order-id { margin-top: 10px; font-size: 0.78rem; color: var(--primary); font-weight: 600; }
+
+    .orc-customer { padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); }
+    .orc-customer-row { display: grid; grid-template-columns: 60px 1fr; font-size: 0.78rem; color: var(--text-gray); margin-bottom: 5px; gap: 6px; }
+    .orc-customer-row strong { color: var(--text-white); font-weight: 600; }
+    .orc-customer-row .muted { color: var(--text-muted); font-weight: 500; font-style: italic; }
+
+    .orc-bill { padding: 16px 18px; border-left: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+    .orc-bill-row { display: grid; grid-template-columns: 1fr auto; font-size: 0.78rem; color: var(--text-gray); margin-bottom: 4px; gap: 6px; }
+    .orc-bill-row strong { color: var(--text-white); font-weight: 600; text-align: right; }
+    .orc-bill-row.earn, .orc-bill-row.earn strong { color: var(--primary); font-weight: 700; }
+    .orc-bill-total { display: grid; grid-template-columns: 1fr auto; font-size: 0.82rem; font-weight: 700; color: var(--text-white); margin-top: 4px; gap: 6px; }
+
+    .accept-delivery-btn {
+      width: 100%; margin-top: 14px; padding: 10px 16px;
+      background: var(--primary); color: #000; border: none; border-radius: var(--radius-sm);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: var(--transition);
+    }
+    .accept-delivery-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .accept-delivery-btn:disabled { background: var(--bg-input); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+    .gate-card { text-align: center; padding: 60px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .gate-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; display: block; }
+    .gate-card h3 { margin-bottom: 6px; }
+    .gate-card p { color: var(--text-muted); font-size: 0.85rem; max-width: 440px; margin: 0 auto 18px; }
+
+    .active-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3);
+      border-radius: var(--radius); padding: 12px 18px; margin-bottom: 18px;
+      font-size: 0.82rem; color: var(--text-gray);
+    }
+    .active-banner a { color: #3498db; font-weight: 700; }
+
+    @media (max-width: 1000px) {
+      .order-req-card { grid-template-columns: 100px 1fr; grid-template-rows: auto auto auto; }
+      .orc-summary img { min-height: 100px; }
+      .orc-customer, .orc-bill { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="orders-navbar">
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;"><span>Uni</span><span>Bites</span></div>
+    <div class="orders-nav-tabs">
+      <a href="orders.html" class="active">Pending Orders</a>
+      <a href="history.html">My History</a>
+      <a href="support.html">Support</a>
+    </div>
+    <img src="https://i.pravatar.cc/80?img=12" alt="User" class="nav-avatar" onclick="window.location.href='profile.html'">
+    <i class="fas fa-sign-out-alt" title="Logout" onclick="studentLogout()" style="color:var(--text-gray);font-size:1.1rem;cursor:pointer;transition:var(--transition);" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-gray)'"></i>
+  </nav>
+
+  <div class="page-main">
+    <div class="page-heading">
+      <a href="../index.html" class="back-square"><i class="fas fa-arrow-left"></i></a>
+      <h1>Pending <span>Order Requests</span></h1>
+    </div>
+
+    <div id="active-banner"></div>
+    <div id="orders-list"></div>
+
+    <div class="load-more-wrap">
+      <button class="btn btn-primary" id="load-more-btn" onclick="loadMoreOrders()" style="display:none;">Load More...</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+        <p>Madani Avenue, Badda,<br>Notun Bazar, Dhaka 1212</p>
+        <p style="margin-top:8px;">405-415-9245<br>405-658-2022<br>unibites@support.gmail</p>
+      </div>
+      <div><h4>About Us :</h4><p>A student first delivery network designed to connect hungry campus diners with local canteen stalls, powered by UIU student riders.</p></div>
+      <div>
+        <h4>Shops :</h4>
+        <ul>
+          <li><a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a></li>
+          <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+          <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+          <li><a href="canteen.html?stall=cp">CP</a></li>
+          <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+          <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal :</h4>
+        <ul>
+          <li><a href="support.html">Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="../js/cart.js"></script>
+  <script>
+    const FALLBACK_IMG = 'https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=300&q=80';
+    function imgSrc(filename) {
+      return (!filename || filename === 'food_default.jpg') ? FALLBACK_IMG : '../uploads/foods/' + filename;
+    }
+    // The highest-priced line represents the order in the card photo
+    function topImage(items) {
+      const top = [...items].sort((a, b) => b.total_price - a.total_price)[0];
+      return imgSrc(top ? top.image : null);
+    }
+
+    let orders = [];
+    let visibleOrders = 5;
+    let picking = false;
+
+    function gateCard(icon, title, text, buttonHtml) {
+      return `<div class="gate-card"><i class="fas ${icon}"></i><h3>${title}</h3><p>${text}</p>${buttonHtml}</div>`;
+    }
+
+    function showGate(data) {
+      document.getElementById('load-more-btn').style.display = 'none';
+      document.getElementById('active-banner').innerHTML = '';
+      const list = document.getElementById('orders-list');
+
+      if (data.code === 'login_required') {
+        list.innerHTML = gateCard('fa-right-to-bracket', 'Log in to start delivering',
+          'Sign in with your student account to see delivery requests.',
+          '<a href="signin.html" class="btn btn-primary">Log In</a>');
+      } else if (data.code === 'not_rider') {
+        list.innerHTML = gateCard('fa-motorcycle', 'Become a UniBites rider',
+          'Pick up orders from campus stalls, deliver them to fellow students, and earn on every delivery.',
+          '<button class="btn btn-primary" onclick="becomeRider(this)">Become a Rider</button>');
+      } else {
+        list.innerHTML = gateCard('fa-triangle-exclamation', 'Delivery requests are for student accounts',
+          escapeHtml(data.message || ''), '<a href="../index.html" class="btn btn-outline">Back to Home</a>');
+      }
+    }
+
+    async function becomeRider(btn) {
+      btn.disabled = true;
+      try {
+        const res = await fetch('../become_rider.php', { method: 'POST' });
+        const data = await res.json();
+        if (!data.success) { showToast(data.message, 'error'); btn.disabled = false; return; }
+        showToast('Welcome aboard! You can now pick up deliveries.');
+        loadOrders();
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+        btn.disabled = false;
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('../get_rider_orders.php');
+        const data = await res.json();
+        if (!data.success) { showGate(data); return; }
+        orders = data.orders;
+        renderBanner(data.active_deliveries, data.max_active);
+        renderOrders();
+      } catch (err) {
+        document.getElementById('orders-list').innerHTML =
+          gateCard('fa-plug-circle-xmark', "Couldn't load requests", 'Please check your connection and refresh.', '');
+      }
+    }
+
+    function renderBanner(active, max) {
+      document.getElementById('active-banner').innerHTML = active > 0
+        ? `<div class="active-banner"><span><i class="fas fa-motorcycle"></i> You have <strong>${active} of ${max}</strong> active deliveries.</span><a href="history.html">Manage them in My History →</a></div>`
+        : '';
+    }
+
+    function renderOrders() {
+      const list = document.getElementById('orders-list');
+      const moreBtn = document.getElementById('load-more-btn');
+
+      if (!orders.length) {
+        list.innerHTML = gateCard('fa-box-open', 'No pending orders right now',
+          'Orders appear here as soon as a shop marks them ready. This page checks for new ones every 20 seconds.', '');
+        moreBtn.style.display = 'none';
+        return;
+      }
+
+      list.innerHTML = orders.slice(0, visibleOrders).map(o => `
+        <div class="order-req-card">
+          <div class="orc-summary">
+            <img src="${topImage(o.items)}" alt="Order preview">
+            ${o.items.length > 1 ? `<span class="item-count-badge"><i class="fas fa-bag-shopping"></i> ${o.items.length}</span>` : ''}
+            <span class="time-tag">${o.time}<br>${o.date}</span>
+          </div>
+
+          <div class="orc-details">
+            <div class="orc-section-title">Order Details</div>
+            ${o.items.map(it => `
+              <div class="orc-item-row">
+                <span class="qty-name">${it.quantity}x ${escapeHtml(it.food_name)}</span>
+                <span class="price">${it.total_price} TK</span>
+                <span class="shop">${escapeHtml(o.shop_name)}</span>
+              </div>`).join('')}
+            <div class="orc-order-id">Order ID : ${escapeHtml(o.order_number)}</div>
+          </div>
+
+          <div class="orc-customer">
+            <div class="orc-section-title">Customer Details</div>
+            <div class="orc-customer-row"><span>Name</span><strong>${escapeHtml(o.full_name)}</strong></div>
+            <div class="orc-customer-row"><span>Contact</span><strong class="muted">Shown after you pick</strong></div>
+            <div class="orc-customer-row"><span>Drop-off</span><strong>${escapeHtml(o.location)}</strong></div>
+          </div>
+
+          <div class="orc-bill">
+            <div class="orc-section-title">Bill Details</div>
+            <div class="orc-bill-row"><span>Order Price</span><strong>${o.subtotal} TK</strong></div>
+            <div class="orc-bill-row"><span>Delivery Fee</span><strong>${o.delivery_fee} TK</strong></div>
+            <div class="orc-bill-total"><span>Total Bill</span><strong>${o.total} TK</strong></div>
+            <div class="orc-bill-row earn" style="margin-top:6px;"><span>You'll earn</span><strong>${o.rider_earn} TK</strong></div>
+            <button class="accept-delivery-btn" onclick="pickOrder(${o.id}, this)">Pick This Order</button>
+          </div>
+        </div>`).join('');
+
+      moreBtn.style.display = orders.length > visibleOrders ? 'inline-flex' : 'none';
+    }
+
+    async function pickOrder(orderId, btn) {
+      picking = true;
+      btn.disabled = true; btn.textContent = 'Picking...';
+      try {
+        const res = await fetch('../pick_order.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order_id: orderId })
+        });
+        const data = await res.json();
+        showToast(data.message, data.success ? 'success' : 'error');
+      } catch (err) {
+        showToast('Network error. Please try again.', 'error');
+      }
+      picking = false;
+      loadOrders(); // refresh either way: a picked order disappears from the list
+    }
+
+    function loadMoreOrders() { visibleOrders += 3; renderOrders(); }
+
+    loadOrders();
+    setInterval(() => { if (!document.hidden && !picking) loadOrders(); }, 20000);
+  </script>
+</body>
+</html>

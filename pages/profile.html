@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBites - My Profile</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      .profile-page {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 30px 40px;
+      }
+
+      .top-profile-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        position: relative;
+        margin-bottom: 20px;
+      }
+      .profile-photo {
+        width: 95px;
+        height: 95px;
+        border-radius: 14px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid var(--border);
+      }
+      .profile-right {
+        flex: 1;
+      }
+      .profile-name {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 2px;
+      }
+      .profile-username {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+      }
+      .profile-badges {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .badge-pill {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid;
+      }
+      .pill-orange {
+        background: rgba(255, 165, 0, 0.15);
+        color: var(--primary);
+        border-color: rgba(255, 165, 0, 0.4);
+      }
+      .pill-green {
+        background: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+        border-color: rgba(40, 167, 69, 0.4);
+      }
+      .pill-blue {
+        background: rgba(52, 152, 219, 0.15);
+        color: #3498db;
+        border-color: rgba(52, 152, 219, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .profile-meta-row {
+        display: flex;
+        gap: 24px;
+        font-size: 0.82rem;
+        color: var(--text-gray);
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .profile-meta-row span strong {
+        color: var(--text-white);
+      }
+      .profile-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .back-btn-profile {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: #000;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 7px 18px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+      }
+      .back-btn-profile:hover {
+        background: var(--primary-dark);
+      }
+
+      .info-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .info-box-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        margin-bottom: 16px;
+      }
+      .info-table {
+        width: 100%;
+      }
+      .info-table tr td:first-child {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        padding: 6px 0;
+        width: 150px;
+      }
+      .info-table tr td:last-child {
+        font-size: 0.85rem;
+        color: var(--text-white);
+        font-weight: 500;
+      }
+
+      .rider-rating-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .rider-rating-headline {
+        flex: 1;
+        min-width: 220px;
+      }
+      .rider-rating-headline h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .rider-rating-headline p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .rider-rating-score {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .rider-rating-big-num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1;
+      }
+      .rider-rating-stars-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .rider-rating-stars-wrap .stars {
+        color: var(--primary);
+        font-size: 1rem;
+        letter-spacing: 2px;
+      }
+      .rider-rating-stars-wrap .count {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+      }
+      .no-rider-rating {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+      .become-rider-inline {
+        background: none;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .activity-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .activity-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        margin-bottom: 4px;
+      }
+      .activity-subtext {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+      }
+
+      .act-summary-row {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+      }
+      .act-summary-item {
+        flex: 1;
+        min-width: 150px;
+        background: var(--bg-card2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+      }
+      .act-summary-val {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+      .act-summary-lbl {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .act-tabs {
+        display: flex;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 5px;
+        width: fit-content;
+        margin-bottom: 22px;
+      }
+      .act-tab {
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: none;
+        background: none;
+        color: var(--text-gray);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: var(--transition);
+      }
+      .act-tab.active {
+        background: var(--primary);
+        color: #000;
+      }
+
+      .activity-legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        font-size: 0.74rem;
+        color: var(--text-muted);
+      }
+      .activity-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .act-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 16px;
+        transition: var(--transition);
+      }
+      .act-card:hover {
+        border-color: rgba(255, 165, 0, 0.3);
+      }
+
+      .act-type-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .act-type-bar.customer-pending {
+        background: rgba(255, 193, 7, 0.12);
+        color: #ffc107;
+      }
+      .act-type-bar.customer-completed {
+        background: rgba(40, 167, 69, 0.12);
+        color: #28a745;
+      }
+      .act-type-bar.rider-progress {
+        background: rgba(52, 152, 219, 0.12);
+        color: #3498db;
+      }
+      .act-type-bar.rider-delivered {
+        background: rgba(155, 89, 182, 0.12);
+        color: #9b59b6;
+      }
+      .act-type-bar.cancelled {
+        background: rgba(220, 53, 69, 0.12);
+        color: #ff6b6b;
+      }
+
+      .act-card-grid {
+        display: grid;
+        grid-template-columns: 150px 1fr 210px 220px;
+        background: var(--bg-card2);
+      }
+
+      .act-summary {
+        position: relative;
+        min-height: 100%;
+        border-right: 1px solid var(--border);
+        overflow: hidden;
+        background: var(--bg-card);
+      }
+      .act-summary img {
+        width: 100%;
+        height: 100%;
+        min-height: 130px;
+        object-fit: cover;
+        display: block;
+      }
+      .act-summary .item-count-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        color: var(--primary);
+        border: 1px solid rgba(255, 165, 0, 0.5);
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .act-summary .time-tag {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        font-size: 0.63rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--text-gray);
+        line-height: 1.4;
+      }
+
+      .act-details {
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .act-section-title {
+        color: var(--primary);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .act-item-row {
+        display: grid;
+        grid-template-columns: 1fr 56px 96px;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.74rem;
+        color: var(--text-gray);
+        padding: 2px 0;
+      }
+      .act-item-row .price {
+        text-align: right;
+        color: var(--text-white);
+        font-weight: 600;
+      }
+      .act-item-row .shop {
+        text-align: right;
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.7rem;
+      }
+      .act-order-id {
+        margin-top: 8px;
+        font-size: 0.74rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .act-info-col {
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-left: 1px solid var(--border);
+      }
+      .act-info-row {
+        display: grid;
+        grid-template-columns: 62px 1fr;
+        font-size: 0.74rem;
+        color: var(--text-gray);
+        margin-bottom: 4px;
+        gap: 6px;
+      }
+      .act-info-row strong {
+        color: var(--text-white);
+        font-weight: 600;
+      }
+
+      .act-status {
+        padding: 14px 16px;
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+      }
+      .act-status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .chip-amber {
+        background: rgba(255, 193, 7, 0.12);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.35);
+      }
+      .chip-green {
+        background: rgba(40, 167, 69, 0.12);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.35);
+      }
+      .chip-blue {
+        background: rgba(52, 152, 219, 0.12);
+        color: #3498db;
+        border: 1px solid rgba(52, 152, 219, 0.35);
+      }
+      .chip-purple {
+        background: rgba(155, 89, 182, 0.12);
+        color: #9b59b6;
+        border: 1px solid rgba(155, 89, 182, 0.35);
+      }
+      .chip-red {
+        background: rgba(220, 53, 69, 0.12);
+        color: #ff6b6b;
+        border: 1px solid rgba(220, 53, 69, 0.35);
+      }
+
+      .act-bill-mini {
+        width: 100%;
+        font-size: 0.72rem;
+        color: var(--text-gray);
+      }
+      .act-bill-mini-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+      }
+      .act-bill-mini-row.total {
+        font-weight: 700;
+        color: var(--text-white);
+        font-size: 0.78rem;
+        margin-top: 4px;
+      }
+
+      .act-stat-block {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        width: 100%;
+      }
+      .act-stat-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+      }
+      .act-stat-text {
+        text-align: left;
+      }
+      .act-stat-label {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .act-stat-amount {
+        font-size: 0.85rem;
+        font-weight: 800;
+        margin-top: 1px;
+      }
+
+      .order-rating-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        color: var(--text-gray);
+      }
+      .order-rating-badge .stars {
+        color: var(--primary);
+        font-size: 0.76rem;
+        letter-spacing: 1px;
+      }
+      .order-rating-badge.none {
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      .act-btn-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+      }
+      .rate-order-btn,
+      .track-btn {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 0.74rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+        text-decoration: none;
+      }
+      .rate-order-btn {
+        background: var(--primary);
+        color: #000;
+        border: none;
+      }
+      .rate-order-btn:hover {
+        background: var(--primary-dark);
+      }
+      .track-btn {
+        background: none;
+        color: var(--text-gray);
+        border: 1px solid var(--border);
+      }
+      .track-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .rated-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        justify-content: center;
+        background: rgba(40, 167, 69, 0.12);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.35);
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+      }
+
+      .empty-activity,
+      .gate-card {
+        text-align: center;
+        padding: 60px 20px;
+      }
+      .empty-activity i,
+      .gate-card i {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .empty-activity h3,
+      .gate-card h3 {
+        margin-bottom: 6px;
+      }
+      .empty-activity p,
+      .gate-card p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 1050px) {
+        .act-card-grid {
+          grid-template-columns: 90px 1fr;
+        }
+        .act-summary img {
+          min-height: 90px;
+        }
+        .act-info-col,
+        .act-status {
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        width: 100%;
+        max-width: 480px;
+        overflow: hidden;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .modal-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--bg-input);
+        border: none;
+        color: var(--text-white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: var(--transition);
+      }
+      .modal-close:hover {
+        background: rgba(255, 165, 0, 0.2);
+        color: var(--primary);
+      }
+      .modal-body {
+        padding: 24px;
+      }
+
+      .rate-block {
+        margin-bottom: 22px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .rate-block:last-of-type {
+        border-bottom: none;
+        margin-bottom: 8px;
+        padding-bottom: 0;
+      }
+      .rate-block-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .rate-block-sub {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+      }
+
+      .star-input {
+        display: flex;
+        gap: 10px;
+        font-size: 1.8rem;
+        cursor: pointer;
+      }
+      .star-input i {
+        color: #4a4a4a;
+        transition:
+          transform 0.15s ease,
+          color 0.15s ease;
+      }
+      .star-input i.fas {
+        color: var(--primary);
+      }
+      .star-input i:hover {
+        transform: scale(1.2);
+      }
+
+      .rate-value-label {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        margin-top: 8px;
+        margin-bottom: 10px;
+        min-height: 16px;
+      }
+      .review-textarea {
+        width: 100%;
+        min-height: 56px;
+        font-size: 0.82rem;
+      }
+      .skip-hint {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div
+        class="logo"
+        onclick="window.location.href = '../index.html'"
+        style="cursor: pointer"
+      >
+        <span>Uni</span><span>Bites</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="canteen.html">Canteen Stalls</a>
+        <a href="foods.html">Foods</a>
+        <a href="earn.html">Earn as Partner</a>
+        <a href="support.html">Support</a>
+      </div>
+      <div class="nav-right">
+        <div class="nav-cart" onclick="window.location.href = 'checkout.html'">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cart-count">0</span>
+        </div>
+        <img
+          src="https://i.pravatar.cc/80?img=12"
+          alt="User"
+          class="nav-avatar"
+        />
+      </div>
+    </nav>
+
+    <div class="profile-page">
+      <div id="profile-header"></div>
+      <div class="rider-rating-card" id="rider-rating-card"></div>
+      <div class="info-box" id="info-box"></div>
+
+      <div class="activity-box">
+        <div class="activity-title">Recent Activity</div>
+        <div class="activity-subtext">
+          Everything you've ordered and delivered on UniBites.
+        </div>
+
+        <div class="act-summary-row">
+          <div class="act-summary-item">
+            <div class="act-summary-val" id="sum-total">—</div>
+            <div class="act-summary-lbl">Total Activity</div>
+          </div>
+          <div class="act-summary-item">
+            <div class="act-summary-val" id="sum-orders">—</div>
+            <div class="act-summary-lbl">Orders Placed</div>
+          </div>
+          <div class="act-summary-item">
+            <div class="act-summary-val" id="sum-deliveries">—</div>
+            <div class="act-summary-lbl">Deliveries Made</div>
+          </div>
+          <div class="act-summary-item">
+            <div class="act-summary-val" id="sum-pending">—</div>
+            <div class="act-summary-lbl">Awaiting Action</div>
+          </div>
+        </div>
+
+        <div class="act-tabs">
+          <button class="act-tab active" onclick="filterActivity('all', this)">
+            All
+          </button>
+          <button class="act-tab" onclick="filterActivity('orders', this)">
+            My Orders
+          </button>
+          <button class="act-tab" onclick="filterActivity('deliveries', this)">
+            My Deliveries
+          </button>
+        </div>
+
+        <div class="activity-legend">
+          <div class="activity-legend-item">
+            <span class="legend-dot" style="background: #ffc107"></span> Your
+            order — preparing
+          </div>
+          <div class="activity-legend-item">
+            <span class="legend-dot" style="background: #28a745"></span> Your
+            order — delivered
+          </div>
+          <div class="activity-legend-item">
+            <span class="legend-dot" style="background: #3498db"></span> You're
+            delivering
+          </div>
+          <div class="activity-legend-item">
+            <span class="legend-dot" style="background: #9b59b6"></span> You
+            delivered
+          </div>
+        </div>
+
+        <div id="activity-list"></div>
+
+        <div class="load-more-wrap">
+          <button
+            class="btn btn-primary"
+            id="load-more-btn"
+            onclick="loadMoreActivity()"
+            style="display: none"
+          >
+            Load More...
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+          <p>Madani Avenue, Badda,<br />Notun Bazar, Dhaka 1212</p>
+          <p style="margin-top: 8px">
+            405-415-9245<br />405-658-2022<br />unibites@support.gmail
+          </p>
+        </div>
+        <div>
+          <h4>About Us :</h4>
+          <p>
+            A student first delivery network designed to connect hungry campus
+            diners with local canteen stalls, powered by UIU student riders.
+          </p>
+        </div>
+        <div>
+          <h4>Shops :</h4>
+          <ul>
+            <li>
+              <a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a>
+            </li>
+            <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+            <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+            <li><a href="canteen.html?stall=cp">CP</a></li>
+            <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+            <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal :</h4>
+          <ul>
+            <li><a href="support.html">Support</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+    </footer>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="edit-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Edit Profile</div>
+          <button class="modal-close" onclick="closeModal('edit-modal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Phone</label
+            ><input
+              type="tel"
+              class="form-control"
+              id="edit-phone"
+              placeholder="Add your phone number"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Default Delivery Area</label
+            ><input
+              type="text"
+              class="form-control"
+              id="edit-location"
+              placeholder="e.g. Room 304, Block A"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">University ID</label
+            ><input
+              type="text"
+              class="form-control"
+              id="edit-uid"
+              placeholder="UIU Student ID"
+            />
+          </div>
+          <button
+            class="btn btn-primary btn-block"
+            id="save-profile-btn"
+            onclick="saveProfile()"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="password-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Change Password</div>
+          <button class="modal-close" onclick="closeModal('password-modal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Current Password</label
+            ><input
+              type="password"
+              class="form-control"
+              id="pw-current"
+              placeholder="Enter current password"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label
+            ><input
+              type="password"
+              class="form-control"
+              id="pw-new"
+              placeholder="Enter new password"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label
+            ><input
+              type="password"
+              class="form-control"
+              id="pw-confirm"
+              placeholder="Confirm new password"
+            />
+          </div>
+          <button
+            class="btn btn-primary btn-block"
+            id="save-pw-btn"
+            onclick="changePassword()"
+          >
+            Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Order Modal -->
+    <div class="modal-overlay" id="rate-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Rate Your Order</div>
+          <button class="modal-close" onclick="closeModal('rate-modal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="rate-order-id" />
+          <div class="rate-block" id="rate-rider-block"></div>
+          <div id="rate-foods-container"></div>
+          <p class="skip-hint">
+            Leaving a rating blank means it won't count toward that average.
+            Written reviews are optional.
+          </p>
+          <button
+            class="btn btn-primary btn-block mt-16"
+            id="submit-rating-btn"
+            onclick="submitRatings()"
+          >
+            Submit Ratings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="../js/cart.js"></script>
+    <script>
+      let profile = null;
+      let allActivities = [];
+      let visibleCount = 5;
+      let currentFilter = "all";
+
+      const FALLBACK_IMG =
+        "https://images.unsplash.com/photo-1495195129352-aeb325a55b65?w=300&q=80";
+      function imgSrc(f) {
+        return !f || f === "food_default.jpg"
+          ? FALLBACK_IMG
+          : "../uploads/foods/" + f;
+      }
+      function topImage(items) {
+        if (!items.length) return FALLBACK_IMG;
+        const top = [...items].sort((a, b) => b.total_price - a.total_price)[0];
+        return imgSrc(top.image);
+      }
+      function fmtTime(ts) {
+        const d = new Date(ts.replace(" ", "T"));
+        return {
+          time: d.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          date: d.toLocaleDateString(),
+        };
+      }
+
+      function gateCard(icon, title, text, extra = "") {
+        return `<div class="gate-card"><i class="fas ${icon}"></i><h3>${title}</h3><p>${text}</p>${extra}</div>`;
+      }
+
+      async function loadProfile() {
+        try {
+          const res = await fetch("../get_student_activity.php");
+          const data = await res.json();
+          if (!data.success) {
+            document.getElementById("profile-header").innerHTML = gateCard(
+              "fa-right-to-bracket",
+              "Please log in",
+              "Sign in with your student account to view your profile.",
+              '<a href="signin.html" class="btn btn-primary">Log In</a>',
+            );
+            document.getElementById("rider-rating-card").style.display = "none";
+            document.getElementById("info-box").style.display = "none";
+            return;
+          }
+          profile = data.profile;
+          allActivities = data.activities;
+          renderHeader();
+          renderInfoBox();
+          renderRiderCard();
+          renderSummary();
+          renderActivity();
+        } catch (err) {
+          showToast("Could not load your profile.", "error");
+        }
+      }
+
+      function renderHeader() {
+        document.getElementById("profile-header").innerHTML = `
+        <div class="top-profile-card">
+          <img src="https://i.pravatar.cc/200?img=12" alt="Profile" class="profile-photo">
+          <div class="profile-right">
+            <div class="profile-name">${escapeHtml(profile.name)}</div>
+            <div class="profile-username">${escapeHtml(profile.email)}</div>
+            <div class="profile-badges">
+              <span class="badge-pill pill-orange">Student</span>
+              <span class="badge-pill pill-green">Verified Email</span>
+              ${profile.is_rider ? '<span class="badge-pill pill-blue"><i class="fas fa-motorcycle"></i> Active Rider</span>' : ""}
+            </div>
+            <div class="profile-meta-row">
+              <span>Joined: <strong>${profile.joined}</strong></span>
+              <span>Balance: <strong>৳${profile.balance.toLocaleString()}</strong></span>
+            </div>
+            <div class="profile-actions">
+              <button class="btn btn-outline btn-sm" onclick="openEditModal()"><i class="fas fa-edit"></i> Edit Profile</button>
+              <button class="btn btn-dark btn-sm" onclick="openPasswordModal()"><i class="fas fa-lock"></i> Change Password</button>
+              <button class="btn btn-dark btn-sm" onclick="studentLogout()" style="border-color:rgba(220,53,69,0.4);color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+          </div>
+          <a href="../index.html" class="back-btn-profile">Back</a>
+        </div>`;
+      }
+
+      function renderInfoBox() {
+        document.getElementById("info-box").innerHTML = `
+        <div class="info-box-title">Account Info</div>
+        <table class="info-table">
+          <tr><td>Full Name</td><td>${escapeHtml(profile.name)}</td></tr>
+          <tr><td>Email</td><td>${escapeHtml(profile.email)}</td></tr>
+          <tr><td>Phone</td><td>${profile.phone ? escapeHtml(profile.phone) : "Not added"}</td></tr>
+          <tr><td>Department</td><td>${profile.department ? escapeHtml(profile.department) : "—"}</td></tr>
+          <tr><td>University ID</td><td>${profile.university_id ? escapeHtml(profile.university_id) : "Not added"}</td></tr>
+          <tr><td>Default Area</td><td>${profile.default_location ? escapeHtml(profile.default_location) : "Not set"}</td></tr>
+        </table>`;
+      }
+
+      function renderRiderCard() {
+        const card = document.getElementById("rider-rating-card");
+        if (!profile.is_rider) {
+          card.innerHTML = `
+          <div class="rider-rating-headline">
+            <h3><i class="fas fa-motorcycle" style="color:var(--primary);margin-right:8px;"></i>Earn as a Rider</h3>
+            <p>Pick up orders from campus stalls and deliver to fellow students for cash.</p>
+          </div>
+          <button class="become-rider-inline" onclick="becomeRider(this)">Become a Rider</button>`;
+          return;
+        }
+        if (profile.rating_count === 0) {
+          card.innerHTML = `
+          <div class="rider-rating-headline">
+            <h3><i class="fas fa-motorcycle" style="color:var(--primary);margin-right:8px;"></i>Your Rider Rating</h3>
+            <p>Complete a few deliveries to start building your rating.</p>
+          </div>
+          <div class="no-rider-rating">No ratings yet</div>`;
+          return;
+        }
+        card.innerHTML = `
+        <div class="rider-rating-headline">
+          <h3><i class="fas fa-motorcycle" style="color:var(--primary);margin-right:8px;"></i>Your Rider Rating</h3>
+          <p>How customers have rated your deliveries across UniBites.</p>
+        </div>
+        <div class="rider-rating-score">
+          <div class="rider-rating-big-num">${profile.avg_rating}</div>
+          <div class="rider-rating-stars-wrap">
+            <span class="stars">${renderStarsHTML(profile.avg_rating)}</span>
+            <span class="count">${profile.rating_count} rating${profile.rating_count === 1 ? "" : "s"}</span>
+          </div>
+        </div>`;
+      }
+
+      async function becomeRider(btn) {
+        btn.disabled = true;
+        try {
+          const res = await fetch("../become_rider.php", { method: "POST" });
+          const data = await res.json();
+          if (!data.success) {
+            showToast(data.message, "error");
+            btn.disabled = false;
+            return;
+          }
+          showToast("Welcome aboard! You can now pick up deliveries.");
+          loadProfile();
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+          btn.disabled = false;
+        }
+      }
+
+      function typeBar(a) {
+        const map = {
+          customer_pending: {
+            cls: "customer-pending",
+            icon: "fa-bag-shopping",
+            label: `Your Order — ${a.stage}`,
+          },
+          customer_completed: {
+            cls: "customer-completed",
+            icon: "fa-bag-shopping",
+            label: "Your Order — Delivered & Paid",
+          },
+          rider_progress: {
+            cls: "rider-progress",
+            icon: "fa-motorcycle",
+            label: "You're Delivering — In Progress",
+          },
+          rider_delivered: {
+            cls: "rider-delivered",
+            icon: "fa-motorcycle",
+            label: "You Delivered This Order",
+          },
+        };
+        if (a.type === "customer_pending" && a.is_cancelled) {
+          return `<div class="act-type-bar cancelled"><i class="fas fa-circle-xmark"></i> Order Cancelled</div>`;
+        }
+        const m = map[a.type];
+        return `<div class="act-type-bar ${m.cls}"><i class="fas ${m.icon}"></i> ${m.label}</div>`;
+      }
+
+      function infoColumn(a) {
+        if (a.type.startsWith("customer")) {
+          return `
+          <div class="act-section-title">Delivery Info</div>
+          <div class="act-info-row"><span>Order From</span><strong>${escapeHtml(a.shop)}</strong></div>
+          ${a.rider ? `<div class="act-info-row"><span>Rider</span><strong>${escapeHtml(a.rider)}</strong></div>` : ""}`;
+        }
+        return `
+        <div class="act-section-title">Delivery Details</div>
+        <div class="act-info-row"><span>From</span><strong>${escapeHtml(a.shop)}</strong></div>
+        <div class="act-info-row"><span>Drop-off</span><strong>${escapeHtml(a.location)}</strong></div>`;
+      }
+
+      function orderRatingBadge(a) {
+        if (a.order_rating)
+          return `<div class="order-rating-badge"><span class="stars">${renderStarsHTML(a.order_rating)}</span><span>${a.order_rating}.0 for this order</span></div>`;
+        return `<div class="order-rating-badge none"><i class="far fa-star"></i> Not rated by customer yet</div>`;
+      }
+
+      function statusColumn(a) {
+        if (a.type === "customer_pending") {
+          if (a.is_cancelled)
+            return `<span class="act-status-chip chip-red"><i class="fas fa-ban"></i> Cancelled</span>`;
+          return `
+          <span class="act-status-chip chip-amber"><i class="fas fa-clock"></i> ${a.stage}</span>
+          <div class="act-bill-mini">
+            <div class="act-bill-mini-row"><span>Order Price</span><span>${a.subtotal} TK</span></div>
+            <div class="act-bill-mini-row"><span>Delivery Fee</span><span>${a.delivery_fee} TK</span></div>
+            <div class="act-bill-mini-row total"><span>Total</span><span>${a.total} TK</span></div>
+          </div>
+          <a class="track-btn" href="track-order.html?order_number=${encodeURIComponent(a.order_number)}">Track Order</a>`;
+        }
+        if (a.type === "customer_completed") {
+          return `
+          <span class="act-status-chip chip-green"><i class="fas fa-check-circle"></i> Delivered & Paid</span>
+          <div class="act-bill-mini">
+            <div class="act-bill-mini-row"><span>Order Price</span><span>${a.subtotal} TK</span></div>
+            <div class="act-bill-mini-row"><span>Delivery Fee</span><span>${a.delivery_fee} TK</span></div>
+            <div class="act-bill-mini-row total"><span>Total Paid</span><span>${a.total} TK</span></div>
+          </div>
+          <div class="act-btn-row">
+            ${
+              a.already_rated
+                ? `<span class="rated-badge"><i class="fas fa-check"></i> Rated</span>`
+                : `<button class="rate-order-btn" onclick='openRateModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>Rate This Order</button>`
+            }
+            <a class="track-btn" href="track-order.html?order_number=${encodeURIComponent(a.order_number)}">View Order</a>
+          </div>`;
+        }
+        if (a.type === "rider_progress") {
+          return `
+          <span class="act-status-chip chip-blue"><i class="fas fa-motorcycle"></i> Out for Delivery</span>
+          <div class="act-stat-block">
+            <div class="act-stat-icon" style="background:rgba(52,152,219,0.12);border:1px solid rgba(52,152,219,0.3);color:#3498db;"><i class="fas fa-hourglass-half"></i></div>
+            <div class="act-stat-text"><div class="act-stat-label">You'll Earn</div><div class="act-stat-amount" style="color:#3498db;">${a.earn} TK</div></div>
+          </div>
+          <a class="track-btn" href="history.html">Manage in History</a>`;
+        }
+        return `
+        <span class="act-status-chip chip-purple"><i class="fas fa-check-circle"></i> Delivered</span>
+        <div class="act-stat-block">
+          <div class="act-stat-icon" style="background:rgba(155,89,182,0.12);border:1px solid rgba(155,89,182,0.3);color:#9b59b6;"><i class="fas fa-coins"></i></div>
+          <div class="act-stat-text"><div class="act-stat-label">You Earned</div><div class="act-stat-amount" style="color:#9b59b6;">${a.earn} TK</div></div>
+        </div>
+        ${orderRatingBadge(a)}`;
+      }
+
+      function filterActivity(filter, btn) {
+        currentFilter = filter;
+        document
+          .querySelectorAll(".act-tab")
+          .forEach((t) => t.classList.remove("active"));
+        btn.classList.add("active");
+        visibleCount = 5;
+        renderActivity();
+      }
+
+      function renderSummary() {
+        const total = allActivities.length;
+        const orders = allActivities.filter((a) =>
+          a.type.startsWith("customer"),
+        ).length;
+        const deliveries = allActivities.filter((a) =>
+          a.type.startsWith("rider"),
+        ).length;
+        const pending = allActivities.filter(
+          (a) =>
+            (a.type === "customer_pending" && !a.is_cancelled) ||
+            a.type === "rider_progress",
+        ).length;
+        document.getElementById("sum-total").textContent = total;
+        document.getElementById("sum-orders").textContent = orders;
+        document.getElementById("sum-deliveries").textContent = deliveries;
+        document.getElementById("sum-pending").textContent = pending;
+      }
+
+      function renderActivity() {
+        let list = allActivities;
+        if (currentFilter === "orders")
+          list = list.filter((a) => a.type.startsWith("customer"));
+        if (currentFilter === "deliveries")
+          list = list.filter((a) => a.type.startsWith("rider"));
+
+        const container = document.getElementById("activity-list");
+        const moreBtn = document.getElementById("load-more-btn");
+
+        if (!list.length) {
+          container.innerHTML = `<div class="empty-activity"><i class="fas fa-inbox"></i><h3>Nothing here yet</h3><p>${currentFilter === "orders" ? "You haven't placed any orders yet." : currentFilter === "deliveries" ? "You haven't made any deliveries yet." : "Your activity will show up here."}</p></div>`;
+          moreBtn.style.display = "none";
+          return;
+        }
+        moreBtn.style.display =
+          list.length > visibleCount ? "inline-flex" : "none";
+
+        container.innerHTML = list
+          .slice(0, visibleCount)
+          .map((a) => {
+            const { time, date } = fmtTime(a.timestamp);
+            return `
+          <div class="act-card">
+            ${typeBar(a)}
+            <div class="act-card-grid">
+              <div class="act-summary">
+                <img src="${topImage(a.items)}" alt="Order preview">
+                ${a.items.length > 1 ? `<span class="item-count-badge"><i class="fas fa-bag-shopping"></i> ${a.items.length}</span>` : ""}
+                <span class="time-tag">${time}<br>${date}</span>
+              </div>
+              <div class="act-details">
+                <div class="act-section-title">Order Details</div>
+                ${a.items.map((it) => `<div class="act-item-row"><span>${it.quantity}x${escapeHtml(it.food_name)}</span><span class="price">${it.total_price} TK</span><span class="shop">${escapeHtml(a.shop)}</span></div>`).join("") || '<div style="font-size:0.78rem;color:var(--text-muted);">No items on record.</div>'}
+                <div class="act-order-id">Order ID : ${escapeHtml(a.order_number)}</div>
+              </div>
+              <div class="act-info-col">${infoColumn(a)}</div>
+              <div class="act-status">${statusColumn(a)}</div>
+            </div>
+          </div>`;
+          })
+          .join("");
+      }
+
+      function loadMoreActivity() {
+        visibleCount += 3;
+        renderActivity();
+      }
+
+      // ===== Edit Profile / Change Password =====
+      function openEditModal() {
+        document.getElementById("edit-phone").value = profile.phone || "";
+        document.getElementById("edit-location").value =
+          profile.default_location || "";
+        document.getElementById("edit-uid").value = profile.university_id || "";
+        document.getElementById("edit-modal").classList.add("show");
+      }
+      function openPasswordModal() {
+        document.getElementById("pw-current").value = "";
+        document.getElementById("pw-new").value = "";
+        document.getElementById("pw-confirm").value = "";
+        document.getElementById("password-modal").classList.add("show");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("show");
+      }
+
+      async function saveProfile() {
+        const btn = document.getElementById("save-profile-btn");
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+        try {
+          const res = await fetch("../update_profile.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              phone: document.getElementById("edit-phone").value.trim(),
+              default_location: document
+                .getElementById("edit-location")
+                .value.trim(),
+              university_id: document.getElementById("edit-uid").value.trim(),
+            }),
+          });
+          const data = await res.json();
+          if (!data.success) {
+            showToast(data.message, "error");
+            return;
+          }
+          closeModal("edit-modal");
+          showToast("Profile updated successfully!");
+          loadProfile();
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Save Changes";
+        }
+      }
+
+      async function changePassword() {
+        const current = document.getElementById("pw-current").value;
+        const next = document.getElementById("pw-new").value;
+        const confirm = document.getElementById("pw-confirm").value;
+        if (!current || !next) {
+          showToast("Please fill in all fields", "error");
+          return;
+        }
+        if (next !== confirm) {
+          showToast("New passwords do not match", "error");
+          return;
+        }
+
+        const btn = document.getElementById("save-pw-btn");
+        btn.disabled = true;
+        btn.textContent = "Updating...";
+        try {
+          const res = await fetch("../change_password.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              current_password: current,
+              new_password: next,
+            }),
+          });
+          const data = await res.json();
+          if (!data.success) {
+            showToast(data.message, "error");
+            return;
+          }
+          closeModal("password-modal");
+          showToast("Password changed successfully!");
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Update Password";
+        }
+      }
+
+      // ===== Rating modal =====
+      function openRateModal(a) {
+        document.getElementById("rate-order-id").value = a.id;
+
+        const riderBlock = document.getElementById("rate-rider-block");
+        if (a.rider) {
+          riderBlock.style.display = "block";
+          riderBlock.innerHTML = `
+          <div class="rate-block-label">Rate your rider</div>
+          <div class="rate-block-sub">Delivered by ${escapeHtml(a.rider)}</div>
+          <div class="star-input" id="star-rider"></div>
+          <div class="rate-value-label" id="star-rider-label"></div>
+          <textarea class="form-control review-textarea" id="review-rider" placeholder="Optional: say a word about your rider"></textarea>`;
+          buildStarInput("star-rider", 0);
+          wireStarLabel("star-rider", "star-rider-label");
+        } else {
+          riderBlock.style.display = "none";
+          riderBlock.innerHTML = "";
+        }
+
+        const foodsContainer = document.getElementById("rate-foods-container");
+        foodsContainer.innerHTML = a.items
+          .map(
+            (it, idx) => `
+        <div class="rate-block">
+          <div class="rate-block-label">${escapeHtml(it.food_name)}</div>
+          <div class="star-input" id="star-food-${idx}"></div>
+          <div class="rate-value-label" id="star-food-${idx}-label"></div>
+          <textarea class="form-control review-textarea" id="review-food-${idx}" placeholder="Optional: what did you think of this item?"></textarea>
+        </div>`,
+          )
+          .join("");
+        a.items.forEach((it, idx) => {
+          buildStarInput(`star-food-${idx}`, 0);
+          wireStarLabel(`star-food-${idx}`, `star-food-${idx}-label`);
+        });
+
+        window._currentRatingActivity = a;
+        document.getElementById("rate-modal").classList.add("show");
+      }
+
+      function wireStarLabel(starId, labelId) {
+        const el = document.getElementById(starId);
+        const label = document.getElementById(labelId);
+        const update = () => {
+          const val = parseInt(el.dataset.rating || 0);
+          label.textContent =
+            val > 0 ? `${val} / 5 selected` : "No rating (will be skipped)";
+        };
+        update();
+        el.addEventListener("click", update);
+      }
+
+      function studentLogout() {
+        fetch("../logout.php", { method: "POST" }).finally(() => {
+          window.location.href = "signin.html";
+        });
+      }
+
+      async function submitRatings() {
+        const a = window._currentRatingActivity;
+        const orderId = document.getElementById("rate-order-id").value;
+        const riderRating = a.rider
+          ? parseInt(document.getElementById("star-rider").dataset.rating || 0)
+          : 0;
+        const riderReview = a.rider
+          ? document.getElementById("review-rider").value.trim()
+          : "";
+
+        const foodRatings = a.items.map((it, idx) => ({
+          food_id: it.food_id,
+          rating: parseInt(
+            document.getElementById(`star-food-${idx}`).dataset.rating || 0,
+          ),
+          review: document.getElementById(`review-food-${idx}`).value.trim(),
+        }));
+
+        const btn = document.getElementById("submit-rating-btn");
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+        try {
+          const res = await fetch("../submit_rating.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              order_id: orderId,
+              rider_rating: riderRating,
+              rider_review: riderReview,
+              food_ratings: foodRatings,
+            }),
+          });
+          const data = await res.json();
+          if (!data.success) {
+            showToast(data.message, "error");
+            return;
+          }
+          showToast("Thanks! Your ratings have been submitted.");
+          closeModal("rate-modal");
+          loadProfile();
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Submit Ratings";
+        }
+      }
+
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.classList.remove("show");
+        });
+      });
+
+      loadProfile();
+    </script>
+  </body>
+</html>

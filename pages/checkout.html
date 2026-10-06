@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBites - Order Checkout</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      .checkout-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px;
+      }
+      .checkout-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 40px;
+        color: var(--primary);
+      }
+      .buy-now-badge {
+        display: block;
+        text-align: center;
+        margin: -28px auto 28px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--primary);
+        background: rgba(255, 165, 0, 0.1);
+        border: 1px solid rgba(255, 165, 0, 0.3);
+        padding: 6px 16px;
+        border-radius: 20px;
+        width: fit-content;
+      }
+      .checkout-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 40px;
+      }
+      @media (max-width: 900px) {
+        .checkout-wrapper {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .billing-card,
+      .order-card-box {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        padding: 28px;
+        border: 1px solid var(--border);
+      }
+      .checkout-section-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+      }
+      .checkout-section-title-dark {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-white);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+
+      .order-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .order-row-prod {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .order-row-sub {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .terms-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 20px;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .terms-row input {
+        accent-color: var(--primary);
+        margin-top: 2px;
+      }
+      .terms-row a {
+        color: var(--text-white);
+        font-weight: 600;
+      }
+
+      .place-order-btn {
+        width: 100%;
+        padding: 16px;
+        background: var(--primary);
+        color: #000;
+        font-size: 1rem;
+        font-weight: 800;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        margin-top: 24px;
+        letter-spacing: 1px;
+        transition: var(--transition);
+      }
+      .place-order-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .empty-cart {
+        text-align: center;
+        padding: 60px;
+        color: var(--text-muted);
+      }
+      .empty-cart i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 16px;
+      }
+      .empty-cart h3 {
+        margin-bottom: 8px;
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div
+        class="logo"
+        onclick="window.location.href = '../index.html'"
+        style="cursor: pointer"
+      >
+        <span>Uni</span><span>Bites</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="canteen.html">Canteen Stalls</a>
+        <a href="foods.html">Foods</a>
+        <a href="earn.html">Earn as Partner</a>
+        <a href="support.html">Support</a>
+      </div>
+      <div class="nav-right">
+        <div class="nav-cart" onclick="window.location.href = 'checkout.html'">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-badge" id="cart-count">0</span>
+        </div>
+        <img
+          src="https://i.pravatar.cc/80?img=12"
+          alt="User"
+          class="nav-avatar"
+          onclick="window.location.href = 'profile.html'"
+        />
+      </div>
+    </nav>
+
+    <div class="checkout-page">
+      <h1 class="checkout-title">Order Checkout</h1>
+      <div class="buy-now-badge" id="buy-now-badge" style="display: none">
+        <i class="fas fa-bolt"></i> Buy Now — Quick Checkout
+      </div>
+
+      <div id="empty-cart" class="empty-cart" style="display: none">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add some food items to proceed with checkout</p>
+        <a href="foods.html" class="btn btn-primary mt-16">Browse Foods</a>
+      </div>
+
+      <div class="checkout-wrapper" id="checkout-content">
+        <!-- BILLING DETAILS -->
+        <div class="billing-card">
+          <div class="checkout-section-title">Billing Details</div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name*</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter your full name"
+              id="fullname"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone*</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              placeholder="Enter your phone number"
+              title="Phone number"
+              aria-label="Phone number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="location">Your Location*</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Your location in campus"
+              id="location"
+              title="Your location"
+              aria-label="Your location"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Your email address"
+              id="email"
+              title="Email address"
+              aria-label="Email address"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="studentid">Student ID</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="UIU Student ID"
+              id="studentid"
+              title="Student ID"
+              aria-label="Student ID"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="notes">Order Notes (Optional)</label>
+            <textarea
+              class="form-control"
+              placeholder="Notes about your order. e.g. special notes for delivery."
+              id="notes"
+              title="Order notes"
+              aria-label="Order notes"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- ORDER SUMMARY -->
+        <div>
+          <div class="order-card-box">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 12px;
+              "
+            >
+              <div class="checkout-section-title-dark">Your Order</div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding-bottom: 8px;
+              "
+            >
+              <span
+                style="
+                  font-size: 0.78rem;
+                  color: var(--primary);
+                  font-weight: 700;
+                  text-transform: uppercase;
+                "
+                >Product</span
+              >
+              <span
+                style="
+                  font-size: 0.78rem;
+                  color: var(--primary);
+                  font-weight: 700;
+                  text-transform: uppercase;
+                "
+                >Subtotal</span
+              >
+            </div>
+            <hr style="border-color: var(--border); margin-bottom: 0" />
+
+            <div id="cart-items-display"></div>
+
+            <div class="order-totals">
+              <div class="total-row">
+                <span>Subtotal</span><span id="subtotal-display">BDT 0</span>
+              </div>
+              <div class="total-row">
+                <span>Delivery Fee</span><span>BDT 18.00</span>
+              </div>
+              <div class="total-row final">
+                <span style="color: var(--primary)">Total</span
+                ><span id="total-display">BDT 0</span>
+              </div>
+            </div>
+
+            <hr class="divider" />
+
+            <!-- Payment Options -->
+            <div class="payment-option selected" onclick="selectPayment(this)">
+              <input
+                type="radio"
+                name="payment"
+                id="payment-cod"
+                checked
+                aria-label="Cash on delivery"
+                title="Cash on delivery"
+              />
+              <label
+                for="payment-cod"
+                style="display: flex; align-items: center; cursor: pointer"
+              >
+                <div>
+                  <div class="payment-label">Cash on delivery</div>
+                </div>
+              </label>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment(this)">
+              <input
+                type="radio"
+                name="payment"
+                id="payment-online"
+                aria-label="Pay online"
+                title="Pay online"
+              />
+              <label
+                for="payment-online"
+                style="display: flex; align-items: center; cursor: pointer"
+              >
+                <div>
+                  <div class="payment-label">
+                    Pay Online (Credit/Debit Card/bKash/<br />MobileBanking/NetBanking)
+                  </div>
+                  <div class="payment-sub">verified by</div>
+                  <div><span class="sslcommerz-badge">SSLCOMMERZ</span></div>
+                </div>
+              </label>
+            </div>
+
+            <div class="terms-row">
+              <input type="checkbox" id="terms" />
+              <label for="terms"
+                >I have read and agree to the website
+                <a href="#"
+                  >Terms and Conditions, Privacy Policy, and Refund Policy</a
+                >*</label
+              >
+            </div>
+
+            <button class="place-order-btn" onclick="placeOrder()">
+              PLACE ORDER
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" style="margin-top: 40px">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo"><span>Uni</span><span>Bites</span></div>
+          <p>Madani Avenue, Badda,<br />Notun Bazar, Dhaka 1212</p>
+        </div>
+        <div>
+          <h4>About Us :</h4>
+          <p>
+            A student first delivery network designed to connect hungry campus
+            diners with local canteen stalls.
+          </p>
+        </div>
+        <div>
+          <h4>Shops :</h4>
+          <ul>
+            <li>
+              <a href="canteen.html?stall=khansKitchen">Khan's Kitchen</a>
+            </li>
+            <li><a href="canteen.html?stall=olympia">Olympia</a></li>
+            <li><a href="canteen.html?stall=wellFood">Well Food</a></li>
+            <li><a href="canteen.html?stall=cp">CP</a></li>
+            <li><a href="canteen.html?stall=brewCafe">Brew Cafe</a></li>
+            <li><a href="canteen.html?stall=cafeNeptune">Cafe Neptune</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal :</h4>
+          <ul>
+            <li><a href="support.html">Support</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2026, UniBites.inc</div>
+    </footer>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="../js/cart.js"></script>
+    <script>
+      // ============================================================
+      //  Buy Now vs. regular Cart checkout
+      //  FIX: previously only this detection block existed — every
+      //  function below it (render, qty change, place order) still
+      //  called getCart() directly and ignored it entirely, so Buy Now
+      //  never actually worked. Now every function below consistently
+      //  uses `checkoutItems` and respects `isBuyNow`.
+      // ============================================================
+      let checkoutItems = [];
+      let isBuyNow = false;
+
+      function initCheckoutSource() {
+        const buyNowData = sessionStorage.getItem("unibites_buynow");
+        if (buyNowData) {
+          checkoutItems = JSON.parse(buyNowData);
+          sessionStorage.removeItem("unibites_buynow"); // one-time use
+          isBuyNow = true;
+          document.getElementById("buy-now-badge").style.display = "block";
+        } else {
+          checkoutItems = getCart();
+          isBuyNow = false;
+        }
+      }
+
+      function selectPayment(el) {
+        document
+          .querySelectorAll(".payment-option")
+          .forEach((o) => o.classList.remove("selected"));
+        el.classList.add("selected");
+        el.querySelector('input[type="radio"]').checked = true;
+      }
+
+      function renderCartItems() {
+        const display = document.getElementById("cart-items-display");
+        const empty = document.getElementById("empty-cart");
+        const content = document.getElementById("checkout-content");
+
+        if (checkoutItems.length === 0) {
+          empty.style.display = "block";
+          content.style.display = "none";
+          return;
+        }
+
+        empty.style.display = "none";
+        content.style.display = "grid";
+
+        let html = "";
+        let subtotal = 0;
+        checkoutItems.forEach((item, idx) => {
+          const itemTotal = item.price * item.qty;
+          subtotal += itemTotal;
+          html += `
+          <div class="order-row">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&q=80" style="width:50px;height:50px;border-radius:8px;object-fit:cover;">
+            <div>
+              <div style="font-size:0.88rem;font-weight:600;">${item.name}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">${item.stall}</div>
+              <div class="order-item-qty" style="margin-top:5px;">
+                <button class="qty-btn" onclick="changeQty(${idx},-1)" ${isBuyNow ? 'disabled title="Buy Now is fixed at 1 item"' : ""}>-</button>
+                <span class="qty-num">${item.qty}</span>
+                <button class="qty-btn" onclick="changeQty(${idx},1)" ${isBuyNow ? 'disabled title="Buy Now is fixed at 1 item"' : ""}>+</button>
+              </div>
+            </div>
+            <span style="font-size:0.88rem;font-weight:600;">BDT ${itemTotal.toFixed(2)}</span>
+          </div>`;
+        });
+
+        display.innerHTML = html;
+        document.getElementById("subtotal-display").textContent =
+          `BDT ${subtotal.toFixed(2)}`;
+        document.getElementById("total-display").textContent =
+          `BDT ${(subtotal + 18).toFixed(2)}`;
+      }
+
+      function changeQty(idx, delta) {
+        // Buy Now is intentionally locked to exactly 1 item — quantity
+        // changes only apply in normal cart mode.
+        if (isBuyNow) return;
+
+        checkoutItems[idx].qty += delta;
+        if (checkoutItems[idx].qty <= 0) checkoutItems.splice(idx, 1);
+        saveCart(checkoutItems); // persist back to the real cart
+        renderCartItems();
+        updateAllCartBadges();
+      }
+
+      async function placeOrder() {
+        const name = document.getElementById("fullname").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const location = document.getElementById("location").value.trim();
+        const email = document.getElementById("email")?.value.trim() || "";
+        const studentId =
+          document.getElementById("studentid")?.value.trim() || "";
+        const notes = document.getElementById("notes")?.value.trim() || "";
+        const terms = document.getElementById("terms").checked;
+
+        if (!name || !phone || !location) {
+          showToast("Please fill all required fields", "error");
+          return;
+        }
+        if (!terms) {
+          showToast("Please agree to Terms & Conditions", "error");
+          return;
+        }
+        if (checkoutItems.length === 0) {
+          showToast("Cart is empty!", "error");
+          return;
+        }
+
+        const paymentMethod = document.getElementById("payment-online").checked
+          ? "online"
+          : "cash_on_delivery";
+
+        const btn = document.querySelector(".place-order-btn");
+        btn.disabled = true;
+        btn.textContent = "PLACING ORDER...";
+
+        try {
+          const res = await fetch("../place_order.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              full_name: name,
+              phone,
+              location,
+              email,
+              student_id: studentId,
+              notes,
+              payment_method: paymentMethod,
+              items: checkoutItems.map((i) => ({
+                name: i.name,
+                price: i.price,
+                qty: i.qty,
+                stall: i.stall,
+              })),
+            }),
+          });
+          const data = await res.json();
+
+          if (!data.success) {
+            if (data.message.toLowerCase().includes("log")) {
+              showToast("Please log in to place an order.", "error");
+              setTimeout(() => (window.location.href = "signin.html"), 1200);
+              return;
+            }
+            showToast(data.message || "Order failed", "error");
+            btn.disabled = false;
+            btn.textContent = "PLACE ORDER";
+            return;
+          }
+
+          if (!isBuyNow) {
+            localStorage.removeItem("unibites_cart");
+            updateAllCartBadges();
+          }
+
+          showToast("Order placed successfully! ✓");
+          // Track the first order created (if items came from multiple shops,
+          // this opens the first one — the others are visible from history.html)
+          const firstOrder = data.orders[0];
+          setTimeout(
+            () =>
+              (window.location.href = `track-order.html?order_number=${firstOrder.order_number}`),
+            1500,
+          );
+        } catch (err) {
+          showToast("Network error. Please try again.", "error");
+          btn.disabled = false;
+          btn.textContent = "PLACE ORDER";
+        }
+      }
+
+      initCheckoutSource();
+      renderCartItems();
+    </script>
+  </body>
+</html>
